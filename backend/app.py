@@ -4,9 +4,9 @@ app = Flask(__name__)
 
 @app.route("/")
 def hello_world():
-    return "<p>Hellow, World!!!</p>"
+    return "<p>Hello, World!!!</p>"
 
-@app.route('/useradd', method=['POST'])
+@app.route('/useradd', methods=['POST'])
 def useradd():
     name = request.json['name']
     email = request.json['email']
