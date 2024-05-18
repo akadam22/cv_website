@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import { RiUserFill, RiLockPasswordFill } from 'react-icons/ri'; // Import user and password icons
 import SignImage from '../assets/image5.jpeg';
 import '../styles/SignInModal.css';
