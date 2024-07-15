@@ -1,26 +1,14 @@
 import mysql.connector
-from mysql.connector import Error
 
-def create_connection():
-    connection = None
-    try:
-        connection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            passwd="",
-            database="my_database"
-        )
-        print("Connection to MySQL DB successful")
-    except Error as e:
-        print(f"The error '{e}' occurred")
-
-    return connection
-
-def execute_query(connection, query, data):
-    cursor = connection.cursor()
-    try:
-        cursor.execute(query, data)
-        connection.commit()
-        print("Query executed successfully")
-    except Error as e:
-        print(f"The error '{e}' occurred")
+try:
+    conn = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="cv_website"
+    )
+    if conn.is_connected():
+        print("Connection done!!!")
+        conn.close()
+except mysql.connector.Error as err:
+    print(f"Error: {err}")

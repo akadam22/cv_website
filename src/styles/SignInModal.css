@@ -1,7 +1,7 @@
 .sign {
   position: relative;
   width: 100%;
-  height: calc(100vh - 200px); /* Adjust height to leave space for the footer */
+  height: 100vh; /* Adjust height to fill the viewport */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -14,9 +14,8 @@
   width: 100%;
   height: 100%;
   background-size: cover;
+  background-position: center;
   opacity: 0.7; /* Adjust the opacity to make it lighter */
-  /* Use the colors from your background image */
-  background-color: #94c0d5; /* Blue */
 }
 
 .content {
@@ -24,7 +23,7 @@
   z-index: 1; /* Ensure the content appears above the background image */
   width: 400px; /* Adjust the width as needed */
   padding: 20px;
-  background-color: rgba(248, 241, 229, 0.2); /* Transparent light brown */
+  background-color: rgba(248, 241, 229, 0.9); /* Semi-transparent light brown */
   border-radius: 10px; /* Rounded corners */
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Shadow for the form */
 }
@@ -46,8 +45,8 @@ label {
 
 input[type="text"],
 input[type="password"] {
-  width: calc(100% - 40px); /* Adjust width to leave space for icon */
-  padding: 10px;
+  width: 100%; /* Use full width */
+  padding: 10px 10px 10px 40px; /* Adjust padding to leave space for icon */
   border: 1px solid #0f4c75; /* Dark blue */
   border-radius: 5px;
   background-color: rgba(255, 255, 255, 0.8); /* Transparent white */
@@ -56,8 +55,8 @@ input[type="password"] {
 .icon {
   position: absolute;
   top: 50%;
+  left: 10px;
   transform: translateY(-50%);
-  right: 10px;
   color: #0f4c75; /* Dark blue */
 }
 
@@ -97,7 +96,7 @@ button[type="submit"]:hover {
   background-color: transparent !important;
   border: none;
   border-bottom: 1px solid #ccc; /* Add bottom border for input fields */
-  padding-left: 30px; /* Adjust left padding to make space for icon */
+  padding-left: 40px; /* Adjust left padding to make space for icon */
 }
 
 .transparent-button {
@@ -115,9 +114,8 @@ button[type="submit"]:hover {
 
 .icon {
   position: absolute;
-  margin-top: 4px; /* Adjust top margin to vertically center the icon */
-  margin-left: 0px; /* Adjust left margin to position the icon */
-  margin-right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 10px; /* Adjust left margin to position the icon */
   color: #8179c7; /* Change icon color */
 }
-

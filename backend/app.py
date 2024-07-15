@@ -1,37 +1,71 @@
-import datetime  # Add this import
-
-from flask import Flask, jsonify, request
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import mysql.connector
+import bcrypt
 
 app = Flask(__name__)
+CORS(app)
 
-# configure the SQLite database, relative to the app instance folder
-app.config["SQLALCHEMY_DATABASE_URI"] = 'mysql+pymysql://root:@localhost/cv_website'  # Corrected URI
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+# Database connection
+def create_connection():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="",
+        database="cv_website"
+    )
 
-class Users(db.Model):
-    __tablename__ = "users"
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50))
-    email = db.Column(db.String(50))
-    date = db.Column(db.DateTime, default=datetime.datetime.now)  # Added datetime module
+# Register Route
+@app.route('/api/registerform', methods=['POST'])
+def register():
+    data = request.get_json()
+    username = data['username']
+    email = data['email']
+    password = data['password'].encode('utf-8')
+    role = data.get('role', 'recruiter') #there are recruiter, admin, user
 
-    def __init__(self, name, email):
-        self.name = name
-        self.email = email
+    conn = create_connection()
+    cursor = conn.cursor(dictionary=True)
 
-@app.route("/")
-def hello_world():
-    return "<p>Hello, World!!!</p>"
+    # Check if username already exists
+    cursor.execute("SELECT * FROM users WHERE username = %s OR email = %s", (username,email))
+    user = cursor.fetchone()
 
-@app.route('/useradd', methods=['POST'])
-def useradd():
-    name = request.json['name']
-    email = request.json['email']
+    if user:
+        cursor.close()
+        conn.close()
+        return jsonify({"error": "Username or email already exists"}), 400
 
-    users = Users(name, email)
-    db.session.add(users)
-    db.session.commit()
+    hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+    cursor.execute(
+        "INSERT INTO users (username, email, password, role) VALUES (%s, %s, %s, %s)",
+        (username, email, hashed_password, role)
+    )
+    conn.commit()
 
-    return jsonify({"success": "Success Post"})
+    cursor.close()
+    conn.close()
+    return jsonify({"message": "User registered successfully"}), 201
+
+# Login Route
+@app.route('/api/signin', methods=['POST'])
+def login():
+    data = request.get_json()
+    username = data['username']
+    password = data['password'].encode('utf-8')
+
+    conn = create_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+    user = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+
+    if user and bcrypt.checkpw(password, user['password'].encode('utf-8')):
+        return jsonify({"message": "Login successful", "role" : user['role']}), 200
+    else:
+        return jsonify({"error": "Invalid username or password"}), 400
+
+if __name__ == '__main__':
+    app.run(debug=True)

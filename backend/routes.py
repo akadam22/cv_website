@@ -1,46 +1,54 @@
-# import os
-# from flask import Flask, request, jsonify, url_for, Blueprint
-# from api.models import db, User
-# from api.utils import generate_sitemap, APIException
-# from flask_jwt_extended import create_access_token
-# from flask_jwt_extended import get_jwt_identity
-# from flask_jwt_extended import jwt_required
+from flask import Flask, request, jsonify
+from app import app, db
+from werkzeug.security import generate_password_hash, check_password_hash
 
-# api = Blueprint('api', __name__)
+VALID_ROLES = {'admin', 'user', 'guest'}
 
-# @api.route('/token', methods=['POST'])
-# def create_token():
-#     email = request.json.get("email", None)
-#     password = request.json.get("password", None)
-#     if email != "test" or password != "test":
-#         return jsonify({"msg": "Bad Username or Password"}) , 401
-    
-#     access_token = create_access_token(identity=email)
-#     return jsonify(access_token = access_token)
+# Initialize the Flask application
+app = Flask(__name__)
 
-from flask import Blueprint, jsonify
 
-# Create a Blueprint object to define routes
-api = Blueprint('api', __name__)
+@app.route('/api/registerform', methods=['POST'])
+def register():
+    data = request.json
+    username = data.get('username')
+    email = data.get('email')
+    password = data.get('password')
+    role = data.get('role', 'recruiter')  # Default role is 'recruiter' if not provided
 
-# Define API endpoints
-@api.route('/api/hello')
-def hello():
-    return jsonify(message='Hello, World!')
+    # Validate role
+    if role not in VALID_ROLES:
+        return jsonify(error="Invalid role"), 400
 
-@api.route('/api/users')
-def get_users():
-    # Your logic to fetch users from the database
-    users = [{'username': 'john_doe', 'email': 'john@example.com'}]
-    return jsonify(users=users)
+    # Check if username or email already exists
+    try:
+        existing_user = db.execute("SELECT * FROM users WHERE username = %s OR email = %s", (username, email)).fetchone()
+        if existing_user:
+            return jsonify(error="Username or email already exists"), 400
 
-# Add more routes as needed
+        # Hash the password
+        hashed_password = generate_password_hash(password)
 
-# Example of a route with dynamic parameter
-@api.route('/api/users/<int:user_id>')
-def get_user(user_id):
-    # Your logic to fetch user with user_id from the database
-    user = {'id': user_id, 'username': 'example_user'}
-    return jsonify(user=user)
+        # Insert user into the database
+        db.execute("INSERT INTO users (username, email, password, role) VALUES (%s, %s, %s, %s)", (username, email, hashed_password, role))
+        db.commit()
+        return jsonify(message="User registered successfully"), 201
 
-# Define other routes and endpoints for your application
+    except Exception as e:
+        db.rollback()
+        print(f"Error: {e}")  # Print the error to the console for debugging
+        return jsonify(error=f"An error occurred while registering user. Details: {e}"), 500
+
+@app.route('/api/signin', methods=['POST'])
+def sign_in():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+
+    # Query the database to find user with matching username
+    user = db.execute("SELECT * FROM users WHERE username = %s", (username,)).fetchone()
+
+    if user and check_password_hash(user['password'], password):
+        return jsonify(message="Sign in successful"), 200
+    else:
+        return jsonify(error="Invalid username or password"), 401

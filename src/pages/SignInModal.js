@@ -1,17 +1,42 @@
 import React, { useState } from 'react';
-import { useHistory, Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
 import { RiUserFill, RiLockPasswordFill } from 'react-icons/ri'; // Import user and password icons
 import SignImage from '../assets/image5.jpeg';
 import '../styles/SignInModal.css';
 
 function SignInModal() {
   const [formData, setFormData] = useState({ username: '', password: '' });
+  const navigate = useNavigate();
 
   // Function to handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Implement sign-in logic here using formData state
+    try {
+      const res = await axios.post('http://localhost:5000/api/signin', formData);
+      const { role } = res.data;
+      alert('Login successful');
+      // Redirect based on user role
+      switch (role) {
+        case 'candidate':
+          navigate('/candidate');
+          break;
+        case 'recruiter':
+          navigate('/recruiter');
+          break;
+        case 'admin':
+          navigate('/admin');
+          break;
+        default:
+          navigate('/'); // Fallback to home page or any default page
+      
+      }
+    } catch (error) {
+      console.error('Error signing in:', error);
+      alert('Invalid username or password. Please try again.');
+    }
   };
+
 
   return (
     <div className="sign">
@@ -20,7 +45,6 @@ function SignInModal() {
         <h2>Sign In</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <RiUserFill className="icon" /> {/* User icon */}
             <input
               type="text"
               id="username"
@@ -29,9 +53,9 @@ function SignInModal() {
               placeholder="Username"
               className="transparent-input" // Add class for transparent input
             />
+            <RiUserFill className="icon" /> {/* User icon */}
           </div>
           <div className="form-group">
-            <RiLockPasswordFill className="icon" /> {/* Password icon */}
             <input
               type="password"
               id="password"
@@ -40,6 +64,7 @@ function SignInModal() {
               placeholder="Password"
               className="transparent-input" // Add class for transparent input
             />
+            <RiLockPasswordFill className="icon" /> {/* Password icon */}
           </div>
         
           <div className="form-group">

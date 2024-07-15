@@ -1,20 +1,28 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom'; // If you're using React Router for navigation
+import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
 import '../styles/RegisterForm.css';
 import RegisterImage from '../assets/image7.jpeg';
 
 function RegisterForm() {
-  const [formData, setFormData] = useState({ username: '', email: '', password: '' });
+  const [formData, setFormData] = useState({ username: '', email: '', password: '', role: 'user' });
+  const navigate = useNavigate();
 
-  // Function to handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Implement registration logic here using formData state
+    try {
+      //await axios.post('/api/register', formData);
+      await axios.post('http://localhost:5000/api/registerform', formData);
+      alert('User registered successfully!');
+    } catch (error) {
+      console.error('Error registering user:', error);
+      alert('An error occurred while registering user. Please try again.');
+    }
   };
 
   return (
     <div className="register">
-      <div className="background-image" style={{backgroundImage: `url(${RegisterImage})`}}></div>
+      <div className="background-image" style={{ backgroundImage: `url(${RegisterImage})` }}></div>
       <div className="content">
         <h2>Register</h2>
         <form onSubmit={handleSubmit}>
@@ -44,6 +52,18 @@ function RegisterForm() {
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             />
+          </div>
+          <div className="form-group">
+            <label htmlFor="role">Role</label>
+            <select
+              id="role"
+              value={formData.role}
+              onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+            >
+              <option value="recruiter">Recruiter</option>
+              <option value="candidate">Candidate</option>
+              <option value="employer">Employer</option>
+            </select>
           </div>
           <div className="form-group">
             <button type="submit">Register</button>
