@@ -1,3 +1,4 @@
+/* SignInModal.css */
 .sign {
   position: relative;
   width: 100%;
@@ -67,7 +68,7 @@ input[type="checkbox"] {
 button[type="submit"] {
   width: 100%;
   padding: 10px;
-  background-color: rgba(15, 76, 117, 0.7); /* Transparent dark blue */
+  background-color: #617a57; /* New color for the button */
   border: none;
   border-radius: 5px;
   color: #fff; /* White font color */
@@ -76,15 +77,16 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-  background-color: rgba(7, 38, 59, 0.9); /* Darker blue on hover */
+  background-color: #4d6045; /* Darker shade for hover effect */
 }
 
 .form-links {
   margin-top: 10px;
+  color: #628a51; /* New color for the text */
 }
 
 .form-links a {
-  color: #0f4c75; /* Dark blue */
+  color: #628a51; /* New color for the links */
   text-decoration: none;
 }
 
@@ -100,16 +102,16 @@ button[type="submit"]:hover {
 }
 
 .transparent-button {
-  background-color: transparent;
-  border: 1px solid #ccc;
-  color: #000;
+  background-color: #617a57; /* New color for the button */
+  border: none; /* No border */
+  color: #fff; /* White font color */
   padding: 10px 20px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 .transparent-button:hover {
-  background-color: #eee; /* Change background color on hover */
+  background-color: #4d6045; /* Darker shade for hover effect */
 }
 
 .icon {

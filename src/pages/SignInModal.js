@@ -1,3 +1,4 @@
+// SignInModal.js
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
@@ -36,7 +37,6 @@ function SignInModal() {
       alert('Invalid username or password. Please try again.');
     }
   };
-
 
   return (
     <div className="sign">
