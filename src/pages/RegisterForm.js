@@ -62,7 +62,7 @@ function RegisterForm() {
             >
               <option value="recruiter">Recruiter</option>
               <option value="candidate">Candidate</option>
-              <option value="employer">Employer</option>
+              <option value="admin">Admin</option>
             </select>
           </div>
           <div className="form-group">

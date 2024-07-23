@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import mysql.connector
 import bcrypt
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -9,10 +10,10 @@ CORS(app)
 # Database connection
 def create_connection():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="cv_website"
+        host=os.getenv("DB_HOST", "localhost"),
+        user=os.getenv("DB_USER", "root"),
+        password=os.getenv("DB_PASSWORD", ""),
+        database=os.getenv("DB_NAME", "cv_website")
     )
 
 # Register Route
@@ -63,7 +64,11 @@ def login():
     conn.close()
 
     if user and bcrypt.checkpw(password, user['password'].encode('utf-8')):
-        return jsonify({"message": "Login successful", "role" : user['role']}), 200
+        return jsonify({
+            "message": "Login successful",
+            "username": user['username'],  # Include username in the response
+            "role": user['role']
+        }), 200
     else:
         return jsonify({"error": "Invalid username or password"}), 400
 

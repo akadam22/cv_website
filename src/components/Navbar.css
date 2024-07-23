@@ -1,0 +1,108 @@
+/* Navbar Container */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333; /* Background color for the navbar */
+  padding: 10px;
+  width: 100%;
+  position: relative;
+  z-index: 1000;
+}
+
+/* Logo */
+.logo {
+  height: 50px; /* Adjust as needed */
+}
+
+/* Links Container */
+.links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Links Style */
+.links a, .links .logout-button {
+  color: #ecf0f1;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+/* Hover Effects */
+.links a:hover, .links .logout-button:hover {
+  background-color: #34495e;
+}
+
+/* Logout Button Style */
+.logout-button {
+  background-color: #e74c3c; /* Red color for logout button */
+  border: none;
+  color: #ecf0f1; /* Light grey */
+  cursor: pointer;
+  padding: 10px;
+  font-size: 18px;
+  border-radius: 5px;
+}
+
+.logout-button:hover {
+  background-color: #c0392b; /* Darker red on hover */
+}
+
+/* Toggle Button for Mobile */
+.toggle-button {
+  display: none; /* Hidden by default */
+  background: none;
+  border: none;
+  color: #ecf0f1;
+  font-size: 24px;
+  cursor: pointer;
+  margin-left: 20px; /* Space between logo and toggle button */
+}
+
+/* Mobile Menu */
+.mobile-menu {
+  display: none; /* Hidden by default */
+  flex-direction: column;
+  width: 100%;
+  background-color: #333;
+  position: absolute;
+  top: 60px; /* Adjust based on header height */
+  left: 0;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.mobile-menu.show {
+  display: flex; /* Show menu when toggled */
+}
+
+.mobile-menu a, .mobile-menu .logout-button {
+  color: #ecf0f1;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+/* Hide mobile menu links in larger screens */
+@media (min-width: 769px) {
+  .mobile-menu {
+    display: none;
+  }
+
+  .toggle-button {
+    display: none;
+  }
+}
+
+/* Show toggle button for mobile screens */
+@media (max-width: 768px) {
+  .toggle-button {
+    display: block;
+  }
+}

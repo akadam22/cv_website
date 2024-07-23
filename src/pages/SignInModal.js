@@ -1,4 +1,3 @@
-// SignInModal.js
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
@@ -15,7 +14,12 @@ function SignInModal() {
     e.preventDefault();
     try {
       const res = await axios.post('http://localhost:5000/api/signin', formData);
-      const { role } = res.data;
+      const { username, role } = res.data;
+      
+      // Save user data in localStorage
+      localStorage.setItem('username', username);
+      localStorage.setItem('role', role);
+
       alert('Login successful');
       // Redirect based on user role
       switch (role) {
@@ -30,7 +34,6 @@ function SignInModal() {
           break;
         default:
           navigate('/'); // Fallback to home page or any default page
-      
       }
     } catch (error) {
       console.error('Error signing in:', error);
