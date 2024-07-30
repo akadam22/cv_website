@@ -1,0 +1,107 @@
+/* src/styles/UserManagement.css */
+
+.user-management {
+    background: url('../assets/usermanagement.jpg') no-repeat center center fixed;
+    background-size: cover;
+    padding: 20px;
+    border-radius: 10px;
+    min-height: 100vh; /* Ensure content area takes full viewport height */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .user-table {
+    width: 100%;
+    max-width: 1200px;
+    border-collapse: collapse;
+    background: rgba(255, 255, 255, 0.9); /* Slightly transparent white */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  
+  .user-table th, .user-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+  
+  .user-table th {
+    background-color: #f2f2f2;
+    color: black;
+  }
+  
+  .user-table tr:hover {
+    background-color: #ddd;
+  }
+  
+  .user-table td {
+    text-align: center;
+  }
+  
+  button {
+    margin: 5px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background-color: #3498db;
+    color: white;
+    transition: background-color 0.3s;
+  }
+  
+  button:hover {
+    background-color: #2980b9;
+  }
+  
+  button:focus {
+    outline: none;
+  }
+  
+  /* Modal styling */
+  .ReactModal__Overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  
+  .ReactModal__Content {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+  }
+  
+  label {
+    display: block;
+    margin-top: 10px;
+  }
+  
+  h2 {
+    margin-bottom: 20px;
+  }
+  
+  .modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .modal-buttons button {
+    width: 48%;
+  }
+  

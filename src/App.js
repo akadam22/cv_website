@@ -8,6 +8,9 @@ import RegisterFom from './pages/RegisterForm';
 import CandidatePage from './pages/CandidatePage';
 import RecruiterPage from './pages/RecruiterPage.js';
 import AdminPage from './pages/AdminPage';
+import UserManagement from './pages/UserManagement.js';
+import JobForm from './components/JobForm';
+import JobList from './components/JobList';
 
 
 function App() {
@@ -22,6 +25,10 @@ function App() {
           <Route path="/candidate" element={<CandidatePage />} />
         <Route path="/recruiter" element={<RecruiterPage />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/admin/users" element={<UserManagement />} /> 
+        <Route path='/recruiter' element={<RecruiterPage />} />
+        <Route path="/recruiter/jobs" element={<JobList />} />
+        <Route path="/recruiter/jobs/new" element={<JobForm />} />
         </Routes>
         <Footer />
       </Router>

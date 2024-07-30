@@ -1,0 +1,61 @@
+
+.job-form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full viewport height */
+  background: url('../assets/image6.jpeg') no-repeat center center fixed;
+  background-size: cover;
+  overflow: auto; /* Allow scrolling */
+  padding: 70px; /* Add padding to avoid overflow issues */
+}
+
+/* Styling for the form */
+.job-form {
+  padding: 20px;
+  top: 0px;
+  background: rgba(255, 255, 255, 0.8); /* Semi-transparent white background */
+  border-radius: 10px;
+  width: 100%;
+  max-width: 600px; /* Max width of the form */
+  box-sizing: border-box; /* Include padding in the width calculation */
+  margin: 0 auto; /* Center the form horizontally */
+}
+
+.job-form h2 {
+  text-align: center;
+}
+
+.job-form form {
+  display: flex;
+  flex-direction: column;
+}
+
+.job-form label {
+  margin-bottom: 10px;
+}
+
+.job-form input, 
+.job-form textarea {
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #3498db;
+  color: white;
+  font-size: 16px;
+  display: block; /* Ensure button takes up space */
+  margin: 0 auto; /* Center button horizontally */
+}
+
+button:hover {
+  background-color: #2980b9;
+}
