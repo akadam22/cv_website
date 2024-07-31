@@ -4,9 +4,15 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 import mysql.connector
 import bcrypt
 import os
+from datetime import datetime
 
 app = Flask(__name__)
-CORS(app , resources={r"/api/*": {"origins": "*"}})
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+
+# JWT Configuration
+app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'  # Change this to a random secret key
+app.config['JWT_TOKEN_LOCATION'] = ['headers']
+jwt = JWTManager(app)
 
 # Database connection
 def create_connection():
@@ -29,25 +35,27 @@ def register():
     conn = create_connection()
     cursor = conn.cursor(dictionary=True)
 
-    # Check if username already exists
-    cursor.execute("SELECT * FROM users WHERE username = %s OR email = %s", (username, email))
-    user = cursor.fetchone()
+    try:
+        cursor.execute("SELECT * FROM users WHERE username = %s OR email = %s", (username, email))
+        user = cursor.fetchone()
 
-    if user:
+        if user:
+            return jsonify({"error": "Username or email already exists"}), 400
+
+        hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
+        cursor.execute(
+            "INSERT INTO users (username, email, password, role) VALUES (%s, %s, %s, %s)",
+            (username, email, hashed_password, role)
+        )
+        conn.commit()
+        return jsonify({"message": "User registered successfully"}), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    finally:
         cursor.close()
         conn.close()
-        return jsonify({"error": "Username or email already exists"}), 400
-
-    hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
-    cursor.execute(
-        "INSERT INTO users (username, email, password, role) VALUES (%s, %s, %s, %s)",
-        (username, email, hashed_password, role)
-    )
-    conn.commit()
-
-    cursor.close()
-    conn.close()
-    return jsonify({"message": "User registered successfully"}), 201
 
 # Login Route
 @app.route('/api/signin', methods=['POST'])
@@ -58,98 +66,46 @@ def login():
 
     conn = create_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
-    user = cursor.fetchone()
 
-    cursor.close()
-    conn.close()
+    try:
+        cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+        user = cursor.fetchone()
 
-    if user and bcrypt.checkpw(password, user['password'].encode('utf-8')):
-        return jsonify({
-            "message": "Login successful",
-            "username": user['username'],  # Include username in the response
-            "role": user['role']
-        }), 200
-    else:
-        return jsonify({"error": "Invalid username or password"}), 400
+        if user and bcrypt.checkpw(password, user['password'].encode('utf-8')):
+            access_token = create_access_token(identity={'username': user['username'], 'role': user['role']})
+            return jsonify({
+                "message": "Login successful",
+                "access_token": access_token,
+                "username": user['username'],
+                "role": user['role']
+            }), 200
+        else:
+            return jsonify({"error": "Invalid username or password"}), 400
 
-# Stats Route
-@app.route('/api/stats', methods=['GET'])
-def get_stats():
-    conn = create_connection()
-    cursor = conn.cursor(dictionary=True)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-    # Queries to get required data
-    cursor.execute("SELECT COUNT(*) AS total_jobs FROM jobs")
-    total_jobs = cursor.fetchone()['total_jobs']
+    finally:
+        cursor.close()
+        conn.close()
 
-    cursor.execute("SELECT COUNT(*) AS total_users FROM users")
-    total_users = cursor.fetchone()['total_users']
-
-    cursor.execute("SELECT COUNT(*) AS total_admins FROM users WHERE role = 'admin'")
-    total_admins = cursor.fetchone()['total_admins']
-
-    cursor.execute("SELECT COUNT(*) AS total_recruiters FROM users WHERE role = 'recruiter'")
-    total_recruiters = cursor.fetchone()['total_recruiters']
-
-    cursor.execute("SELECT COUNT(*) AS total_jobs_posted FROM jobs")
-    total_jobs_posted = cursor.fetchone()['total_jobs_posted']
-
-    cursor.close()
-    conn.close()
-
-    return jsonify({
-        'total_jobs': total_jobs,
-        'total_users': total_users,
-        'total_admins': total_admins,
-        'total_recruiters': total_recruiters,
-        'total_jobs_posted': total_jobs_posted
-    })
-
-#get user details
+# Get user details
 @app.route('/api/users', methods=['GET'])
 def get_users():
     conn = create_connection()
     cursor = conn.cursor(dictionary=True)
-    
-    # Fetch all users
-    cursor.execute("SELECT * FROM users")
-    users = cursor.fetchall()
 
-    cursor.close()
-    conn.close()
-    
-    return jsonify(users)
+    try:
+        cursor.execute("SELECT * FROM users")
+        users = cursor.fetchall()
+        return jsonify(users)
 
-# Update a user
-@app.route('/api/users/<int:id>', methods=['PUT'])
-def update_user(id):
-    data = request.get_json()
-    username = data['username']
-    email = data['email']
-    role = data['role']
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-    conn = create_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute(
-        "UPDATE users SET username = %s, email = %s, role = %s WHERE id = %s",
-        (username, email, role, id)
-    )
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return jsonify({"message": "User updated successfully"})
-
-# Delete a user
-@app.route('/api/users/<int:id>', methods=['DELETE'])
-def delete_user(id):
-    conn = create_connection()
-    cursor = conn.cursor(dictionary=True)
-    cursor.execute("DELETE FROM users WHERE id = %s", (id,))
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return jsonify({"message": "User deleted successfully"})
+    finally:
+        cursor.close()
+        conn.close()
 
 # Create a new job posting
 @app.route('/api/jobs', methods=['POST'])
@@ -168,27 +124,64 @@ def create_job():
 
     conn = create_connection()
     cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO jobs (title, description, company, location, salary) VALUES (%s, %s, %s, %s)",
-        (title, description, company, location, salary)
-    )
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return jsonify({"message": "Job posted successfully"}), 201
+    post_date = datetime.now().strftime('%Y-%m-%d')  # Use date format for PostDate
+    created_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')  # Timestamp format for CreatedAt
+
+    try:
+        cursor.execute(
+            "INSERT INTO job (JobTitle, JobDescription, Company, Location, Salary, PostDate, CreatedAt) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+            (title, description, company, location, salary, post_date, created_at)
+        )
+        conn.commit()
+        return jsonify({"message": "Job posted successfully"}), 201
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
 
 # Get list of jobs
 @app.route('/api/jobs', methods=['GET'])
 def get_jobs():
     conn = create_connection()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM jobs")
-    jobs = cursor.fetchall()
-    cursor.close()
-    conn.close()
-    return jsonify(jobs)
 
-# Update a job posting
+    try:
+        cursor.execute("SELECT * FROM job")
+        jobs = cursor.fetchall()
+        return jsonify(jobs)
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
+# Get a specific job
+@app.route('/api/jobs/<int:job_id>', methods=['GET'])
+def get_job(job_id):
+    conn = create_connection()
+    cursor = conn.cursor(dictionary=True)
+
+    try:
+        cursor.execute("SELECT * FROM job WHERE JobID = %s", (job_id,))
+        job = cursor.fetchone()
+        if job:
+            return jsonify(job)
+        else:
+            return jsonify({"error": "Job not found"}), 404
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
+# Update job posting
 @app.route('/api/jobs/<int:job_id>', methods=['PUT'])
 @jwt_required()
 def update_job(job_id):
@@ -205,30 +198,22 @@ def update_job(job_id):
 
     conn = create_connection()
     cursor = conn.cursor()
-    cursor.execute(
-        "UPDATE jobs SET title = %s, description = %s, company = %s, location = %s, salary = %s WHERE id = %s",
-        (title, description, company, location, salary, job_id)
-    )
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return jsonify({"message": "Job updated successfully"}), 200
+    updated_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
-# Delete a job posting
-@app.route('/api/jobs/<int:job_id>', methods=['DELETE'])
-@jwt_required()
-def delete_job(job_id):
-    current_user = get_jwt_identity()
-    if current_user['role'] != 'recruiter':
-        return jsonify({"error": "Access forbidden"}), 403
+    try:
+        cursor.execute(
+            "UPDATE job SET JobTitle = %s, JobDescription = %s, Company = %s, Location = %s, Salary = %s, UpdatedAt = %s WHERE JobID = %s",
+            (title, description, company, location, salary, updated_at, job_id)
+        )
+        conn.commit()
+        return jsonify({"message": "Job updated successfully"}), 200
 
-    conn = create_connection()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM jobs WHERE id = %s", (job_id,))
-    conn.commit()
-    cursor.close()
-    conn.close()
-    return jsonify({"message": "Job deleted successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(debug=True)

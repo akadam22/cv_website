@@ -8,7 +8,7 @@ function JobList() {
 
   useEffect(() => {
     // Fetch jobs from Flask API
-    axios.get('http://localhost:5000/api/recruiter/jobs')
+    axios.get('http://localhost:5000/api/jobs')
       .then(response => {
         setJobs(response.data);
       })
@@ -18,9 +18,9 @@ function JobList() {
   }, []);
 
   const handleDelete = (id) => {
-    axios.delete(`http://localhost:5000/api/recruiter/jobs/${id}`)
+    axios.delete(`http://localhost:5000/api/jobs/${id}`)
       .then(response => {
-        setJobs(jobs.filter(job => job.id !== id));
+        setJobs(jobs.filter(job => job.JobID !== id));  // Ensure matching key
       })
       .catch(error => {
         console.error('Error deleting job:', error);
@@ -29,15 +29,16 @@ function JobList() {
 
   return (
     <div className="job-list">
-        <br />
-        <br />
-        <br />
+      <br />
+      <br />
+      <br />
       <h2>Your Job Postings</h2>
       <table className="job-table">
         <thead>
           <tr>
             <th>Title</th>
             <th>Description</th>
+            <th>Company</th>  {/* Changed from Location to Company */}
             <th>Location</th>
             <th>Salary</th>
             <th>Actions</th>
@@ -45,16 +46,17 @@ function JobList() {
         </thead>
         <tbody>
           {jobs.map(job => (
-            <tr key={job.id}>
-              <td>{job.title}</td>
-              <td>{job.description}</td>
-              <td>{job.location}</td>
-              <td>{job.salary}</td>
-              <td>
-                <Link to={`/recruiter/jobs/edit/${job.id}`}>
+            <tr key={job.JobID}>
+              <td>{job.JobTitle}</td>
+              <td>{job.JobDescription}</td>
+              <td>{job.Company}</td>  {/* Display Company */}
+              <td>{job.Location}</td>
+              <td>{job.Salary}</td>  {/* Ensure field name is correct */}
+              <td className="action-buttons">
+                <Link to={`/recruiter/jobs/edit/${job.JobID}`}>
                   <button>Edit</button>
                 </Link>
-                <button onClick={() => handleDelete(job.id)}>Delete</button>
+                <button onClick={() => handleDelete(job.JobID)}>Delete</button>
               </td>
             </tr>
           ))}

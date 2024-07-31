@@ -14,13 +14,15 @@ function SignInModal() {
     e.preventDefault();
     try {
       const res = await axios.post('http://localhost:5000/api/signin', formData);
-      const { username, role } = res.data;
-      
-      // Save user data in localStorage
+      const { access_token, username, role } = res.data;
+
+      // Save access token and user data in localStorage
+      localStorage.setItem('access_token', access_token);
       localStorage.setItem('username', username);
       localStorage.setItem('role', role);
 
       alert('Login successful');
+
       // Redirect based on user role
       switch (role) {
         case 'candidate':
@@ -55,6 +57,7 @@ function SignInModal() {
               onChange={(e) => setFormData({ ...formData, username: e.target.value })}
               placeholder="Username"
               className="transparent-input" // Add class for transparent input
+              autoComplete="username" // Add autocomplete attribute
             />
             <RiUserFill className="icon" /> {/* User icon */}
           </div>
@@ -66,6 +69,7 @@ function SignInModal() {
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               placeholder="Password"
               className="transparent-input" // Add class for transparent input
+              autoComplete="current-password" // Add autocomplete attribute
             />
             <RiLockPasswordFill className="icon" /> {/* Password icon */}
           </div>

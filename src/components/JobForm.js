@@ -9,6 +9,7 @@ function JobForm() {
   const [company, setCompany] = useState('');
   const [location, setLocation] = useState('');
   const [salary, setSalary] = useState('');
+  const [error, setError] = useState('');
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -25,6 +26,7 @@ function JobForm() {
           setSalary(job.salary);
         })
         .catch(error => {
+          setError('Error fetching job details.');
           console.error('Error fetching job:', error);
         });
     }
@@ -32,23 +34,45 @@ function JobForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setError(''); // Clear previous errors
+
+    if (isNaN(salary) || parseFloat(salary) <= 0) {
+      setError('Please enter a valid salary.');
+      return;
+    }
+
     const job = { title, description, company, location, salary };
+
+    const token = localStorage.getItem('access_token');
+    console.log('Access Token:', token); // Log the access token
+
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    };
+
     if (id) {
       // Update existing job
-      axios.put(`http://localhost:5000/api/jobs/${id}`, job)
+      axios.put(`http://localhost:5000/api/jobs/${id}`, job, config)
         .then(response => {
+          alert('Job updated successfully!');
           navigate('/recruiter/jobs');
         })
         .catch(error => {
+          alert('Error updating job: ' + error.message);
           console.error('Error updating job:', error);
         });
     } else {
       // Create new job
-      axios.post('http://localhost:5000/api/jobs', job)
+      axios.post('http://localhost:5000/api/jobs', job, config)
         .then(response => {
+          alert('Job created successfully!');
           navigate('/recruiter/jobs');
         })
         .catch(error => {
+          alert('Error creating job: ' + error.message);
           console.error('Error creating job:', error);
         });
     }
@@ -56,9 +80,10 @@ function JobForm() {
 
   return (
     <div className="job-form-container">
-        <br></br><br></br><br></br>
+      <br /><br /><br />
       <div className="job-form">
         <h2>{id ? 'Edit Job' : 'Post a New Job'}</h2>
+        {error && <p className="error-message">{error}</p>}
         <form onSubmit={handleSubmit}>
           <label htmlFor="title">
             Title:
@@ -68,6 +93,7 @@ function JobForm() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
+              autoComplete="job-title" // Added autocomplete attribute
             />
           </label>
           <label htmlFor="description">
@@ -77,6 +103,7 @@ function JobForm() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
+              autoComplete="job-description" // Added autocomplete attribute
             />
           </label>
           <label htmlFor="company">
@@ -87,6 +114,7 @@ function JobForm() {
               value={company}
               onChange={(e) => setCompany(e.target.value)}
               required
+              autoComplete="company-name" // Added autocomplete attribute
             />
           </label>
           <label htmlFor="location">
@@ -97,6 +125,7 @@ function JobForm() {
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               required
+              autoComplete="job-location" // Added autocomplete attribute
             />
           </label>
           <label htmlFor="salary">
@@ -107,6 +136,7 @@ function JobForm() {
               value={salary}
               onChange={(e) => setSalary(e.target.value)}
               required
+              autoComplete="job-salary" // Added autocomplete attribute
             />
           </label>
           <button type="submit">{id ? 'Update Job' : 'Post Job'}</button>

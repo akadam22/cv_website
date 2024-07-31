@@ -44,7 +44,7 @@
 }
 
 .job-table tr:hover {
-  background-color: #d0d0d0; /* Light grey for hover effect */
+  background-color: #e7d2ae; /* Light grey for hover effect */
 }
 
 /* Style for buttons */
@@ -59,7 +59,14 @@ button {
   z-index: 10;
   position: relative;
 }
+.job-table button {
+  margin: 0 5px; /* Space between buttons */
+}
 
+.job-table .action-buttons {
+  display: flex;
+  gap: 5px; /* Space between buttons */
+}
 button:hover {
   background-color: #2980b9; /* Darker shade for hover effect */
 }
