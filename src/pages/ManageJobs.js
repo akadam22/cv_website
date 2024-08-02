@@ -1,7 +1,7 @@
 // src/components/JobManagement.js
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../styles/JobManagement.css';
+import '../styles/ManageJobs.css';
 
 function JobManagement() {
   const [jobs, setJobs] = useState([]);
@@ -18,13 +18,6 @@ function JobManagement() {
       });
   }, []);
 
-  const handleCreateJob = () => {
-    // Handle job creation logic
-  };
-
-  const handleUpdateJob = () => {
-    // Handle job update logic
-  };
 
   const handleDeleteJob = (jobId) => {
     axios.delete(`http://localhost:5000/api/jobs/${jobId}`)

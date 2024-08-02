@@ -1,17 +1,18 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, create_refresh_token, get_jwt_identity
 import mysql.connector
 import bcrypt
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 
 # JWT Configuration
 app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'  # Change this to a random secret key
-app.config['JWT_TOKEN_LOCATION'] = ['headers']
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=15)  # Example: 15 minutes
+app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)  # Example: 30 days
 jwt = JWTManager(app)
 
 # Database connection
@@ -73,9 +74,11 @@ def login():
 
         if user and bcrypt.checkpw(password, user['password'].encode('utf-8')):
             access_token = create_access_token(identity={'username': user['username'], 'role': user['role']})
+            refresh_token = create_refresh_token(identity={'username': user['username'], 'role': user['role']})
             return jsonify({
                 "message": "Login successful",
                 "access_token": access_token,
+                "refresh_token": refresh_token,
                 "username": user['username'],
                 "role": user['role']
             }), 200
@@ -88,6 +91,14 @@ def login():
     finally:
         cursor.close()
         conn.close()
+
+# Refresh Token Route
+@app.route('/api/token/refresh', methods=['POST'])
+@jwt_required(refresh=True)
+def refresh_token():
+    current_user = get_jwt_identity()
+    new_access_token = create_access_token(identity=current_user)
+    return jsonify(access_token=new_access_token), 200
 
 # Get user details
 @app.route('/api/users', methods=['GET'])
@@ -207,6 +218,31 @@ def update_job(job_id):
         )
         conn.commit()
         return jsonify({"message": "Job updated successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
+# Delete a job posting
+@app.route('/api/jobs/<int:job_id>', methods=['DELETE'])
+@jwt_required()
+def delete_job(job_id):
+    current_user = get_jwt_identity()
+    if current_user['role'] != 'recruiter':
+        return jsonify({"error": "Access forbidden"}), 403
+
+    conn = create_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("DELETE FROM job WHERE JobID = %s", (job_id,))
+        conn.commit()
+        if cursor.rowcount == 0:
+            return jsonify({"error": "Job not found"}), 404
+        return jsonify({"message": "Job deleted successfully"}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

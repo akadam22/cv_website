@@ -19,11 +19,11 @@ function JobForm() {
       axios.get(`http://localhost:5000/api/jobs/${id}`)
         .then(response => {
           const job = response.data;
-          setTitle(job.title);
-          setDescription(job.description);
-          setCompany(job.company);
-          setLocation(job.location);
-          setSalary(job.salary);
+          setTitle(job.JobTitle);
+          setDescription(job.JobDescription);
+          setCompany(job.Company);
+          setLocation(job.Location);
+          setSalary(job.Salary);
         })
         .catch(error => {
           setError('Error fetching job details.');
@@ -93,7 +93,7 @@ function JobForm() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
-              autoComplete="job-title" // Added autocomplete attribute
+              autoComplete="job-title"
             />
           </label>
           <label htmlFor="description">
@@ -103,7 +103,7 @@ function JobForm() {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
-              autoComplete="job-description" // Added autocomplete attribute
+              autoComplete="job-description"
             />
           </label>
           <label htmlFor="company">
@@ -114,7 +114,7 @@ function JobForm() {
               value={company}
               onChange={(e) => setCompany(e.target.value)}
               required
-              autoComplete="company-name" // Added autocomplete attribute
+              autoComplete="company-name"
             />
           </label>
           <label htmlFor="location">
@@ -125,7 +125,7 @@ function JobForm() {
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               required
-              autoComplete="job-location" // Added autocomplete attribute
+              autoComplete="job-location"
             />
           </label>
           <label htmlFor="salary">
@@ -136,7 +136,7 @@ function JobForm() {
               value={salary}
               onChange={(e) => setSalary(e.target.value)}
               required
-              autoComplete="job-salary" // Added autocomplete attribute
+              autoComplete="job-salary"
             />
           </label>
           <button type="submit">{id ? 'Update Job' : 'Post Job'}</button>
