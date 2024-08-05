@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Modal from 'react-modal';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/JobList.css';
 
 Modal.setAppElement('#root'); // Set the root element for accessibility
@@ -17,26 +17,47 @@ function JobList() {
     location: '',
     salary: ''
   });
+  const navigate = useNavigate(); // Hook for navigation
 
   useEffect(() => {
     // Fetch jobs from Flask API
-    axios.get('http://localhost:5000/api/jobs')
-      .then(response => {
+    const fetchJobs = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/jobs', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`
+          }
+        });
         setJobs(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching jobs:', error);
-      });
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          // Token expired or invalid, attempt to refresh
+          const newToken = await refreshToken();
+          if (newToken) {
+            // Retry the request with the new token
+            const retryResponse = await axios.get('http://localhost:5000/api/jobs', {
+              headers: {
+                Authorization: `Bearer ${newToken}`
+              }
+            });
+            setJobs(retryResponse.data);
+          }
+        } else {
+          console.error('Error fetching jobs:', error.response ? error.response.data : error.message);
+        }
+      }
+    };
+    fetchJobs();
   }, []);
 
   const openModal = (job) => {
     setCurrentJob(job);
     setFormData({
-      title: job.JobTitle,
-      description: job.JobDescription,
-      company: job.Company,
-      location: job.Location,
-      salary: job.Salary
+      title: job.title,
+      description: job.description,
+      company: job.company,
+      location: job.location,
+      salary: job.salary
     });
     setModalIsOpen(true);
   };
@@ -53,39 +74,103 @@ function JobList() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    axios.put(`http://localhost:5000/api/jobs/${currentJob.JobID}`, formData, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('access_token')}` // Ensure JWT token is sent
-      }
-    })
-    .then(response => {
-      // Update job list
-      setJobs(jobs.map(job => job.JobID === currentJob.JobID ? { ...job, ...formData } : job));
-      console.log('Job updated successfully', response.data);
-      closeModal();
-    })
-    .catch(error => {
-      console.error('Error updating job:', error.response ? error.response.data : error.message);
-    });
-  };
-
-  const handleDelete = (id, title) => {
-    if (window.confirm(`Are you sure you want to delete the job titled "${title}"?`)) {
-      axios.delete(`http://localhost:5000/api/jobs/${id}`, {
+  
+    if (!currentJob?.id) {
+      console.error('No Job ID specified for update.');
+      return;
+    }
+  
+    try {
+      await axios.put(`http://localhost:5000/api/jobs/${currentJob.id}`, formData, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('access_token')}` // Ensure JWT token is sent
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`
         }
-      })
-      .then(response => {
-        setJobs(jobs.filter(job => job.JobID !== id));
-      })
-      .catch(error => {
-        console.error('Error deleting job:', error.response ? error.response.data : error.message);
       });
+      // Update job list
+      setJobs(jobs.map(job => job.id === currentJob.id ? { ...job, ...formData } : job));
+      closeModal();
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        // Token might be expired, attempt to refresh
+        const newToken = await refreshToken();
+        console.log('Access Token:', localStorage.getItem('access_token'));
+
+        if (newToken) {
+          // Retry the request with the new token
+          await axios.put(`http://localhost:5000/api/jobs/${currentJob.id}`, formData, {
+            headers: {
+              Authorization: `Bearer ${newToken}`
+            }
+            
+          });
+          setJobs(jobs.map(job => job.id === currentJob.id ? { ...job, ...formData } : job));
+          closeModal();
+        }
+      } else {
+        console.error('Error updating job:', error.response ? error.response.data : error.message);
+      }
     }
   };
+  
+
+  const handleDelete = async (id, title) => {
+    if (!id) {
+      console.error('No ID specified for delete.');
+      return;
+    }
+    if (window.confirm(`Are you sure you want to delete the job titled "${title}"?`)) {
+      try {
+        await axios.delete(`http://localhost:5000/api/jobs/${id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`
+          }
+        });
+        setJobs(jobs.filter(job => job.id !== id));
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          // Token might be expired, attempt to refresh
+          const newToken = await refreshToken();
+          if (newToken) {
+            // Retry the request with the new token
+            await axios.delete(`http://localhost:5000/api/jobs/${id}`, {
+              headers: {
+                Authorization: `Bearer ${newToken}`
+              }
+            });
+            setJobs(jobs.filter(job => job.id !== id));
+          }
+        } else {
+          console.error('Error deleting job:', error.response ? error.response.data : error.message);
+        }
+      }
+    }
+  };
+  
+
+  const refreshToken = async () => {
+    try {
+      const refreshToken = localStorage.getItem('refresh_token');
+      if (!refreshToken) {
+        throw new Error('No refresh token available');
+      }
+  
+      const response = await axios.post('http://localhost:5000/api/token/refresh', {}, {
+        headers: {
+          Authorization: `Bearer ${refreshToken}`
+        }
+      });
+  
+      localStorage.setItem('access_token', response.data.access_token);
+      return response.data.access_token;
+    } catch (error) {
+      console.error('Error refreshing token:', error.response ? error.response.data : error.message);
+      // Redirect to login or handle refresh failure
+      navigate('/recruiter/jobs'); // Adjust routing as needed
+    }
+  };
+  
 
   return (
     <div className="job-list">
@@ -106,15 +191,15 @@ function JobList() {
         </thead>
         <tbody>
           {jobs.map(job => (
-            <tr key={job.JobID}>
-              <td>{job.JobTitle}</td>
-              <td>{job.JobDescription}</td>
-              <td>{job.Company}</td>
-              <td>{job.Location}</td>
-              <td>{job.Salary}</td>
+            <tr key={job.id}>
+              <td>{job.title}</td>
+              <td>{job.description}</td>
+              <td>{job.company}</td>
+              <td>{job.location}</td>
+              <td>{job.salary}</td>
               <td className="action-buttons">
                 <button onClick={() => openModal(job)}>Edit</button>
-                <button onClick={() => handleDelete(job.JobID, job.JobTitle)}>Delete</button>
+                <button onClick={() => handleDelete(job.id, job.title)}>Delete</button>
               </td>
             </tr>
           ))}

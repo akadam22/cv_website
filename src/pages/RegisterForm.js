@@ -5,15 +5,31 @@ import '../styles/RegisterForm.css';
 import RegisterImage from '../assets/image7.jpeg';
 
 function RegisterForm() {
-  const [formData, setFormData] = useState({ username: '', email: '', password: '', role: 'user' });
+  const [formData, setFormData] = useState({
+    name: '',
+    contact: '',
+    location: '',
+    email: '',
+    password: '',
+    role: 'recruiter', // Default role
+    profilePicture: '', // Optional, if you want to handle file uploads
+  });
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const formDataToSend = new FormData();
+    for (const key in formData) {
+      formDataToSend.append(key, formData[key]);
+    }
     try {
-      //await axios.post('/api/register', formData);
-      await axios.post('http://localhost:5000/api/registerform', formData);
+      await axios.post('http://localhost:5000/api/registerform', formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       alert('User registered successfully!');
+      navigate('/signin'); // Redirect to sign-in page
     } catch (error) {
       console.error('Error registering user:', error);
       alert('An error occurred while registering user. Please try again.');
@@ -27,12 +43,30 @@ function RegisterForm() {
         <h2>Register</h2>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label htmlFor="username">Username</label>
+            <label htmlFor="name">Name</label>
             <input
               type="text"
-              id="username"
-              value={formData.username}
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+              id="name"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="contact">Contact</label>
+            <input
+              type="text"
+              id="contact"
+              value={formData.contact}
+              onChange={(e) => setFormData({ ...formData, contact: e.target.value })}
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="location">Location</label>
+            <input
+              type="text"
+              id="location"
+              value={formData.location}
+              onChange={(e) => setFormData({ ...formData, location: e.target.value })}
             />
           </div>
           <div className="form-group">
@@ -60,9 +94,9 @@ function RegisterForm() {
               value={formData.role}
               onChange={(e) => setFormData({ ...formData, role: e.target.value })}
             >
+              <option value="admin">Admin</option>
               <option value="recruiter">Recruiter</option>
               <option value="candidate">Candidate</option>
-              <option value="admin">Admin</option>
             </select>
           </div>
           <div className="form-group">

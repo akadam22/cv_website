@@ -24,6 +24,7 @@ function CandidatePage() {
           <li><Link to="/candidate/profile">Profile</Link></li>
           <li><Link to="/candidate/jobs">Jobs</Link></li>
           <li><Link to="/candidate/settings">Settings</Link></li>
+          <li><button className="logout-button" onClick={() => window.location.href = '/'}>Logout</button></li>
         </ul>
       </div>
       <div className="main-content"><br></br><br></br><br></br>

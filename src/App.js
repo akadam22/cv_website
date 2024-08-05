@@ -11,6 +11,8 @@ import AdminPage from './pages/AdminPage';
 import UserManagement from './pages/UserManagement.js';
 import JobForm from './components/JobForm';
 import JobList from './components/JobList';
+import CandidateProfile from './pages/CandidateProfile.js';
+
 
 
 function App() {
@@ -29,6 +31,7 @@ function App() {
         <Route path='/recruiter' element={<RecruiterPage />} />
         <Route path="/recruiter/jobs" element={<JobList />} />
         <Route path="/recruiter/jobs/new" element={<JobForm />} />
+        <Route path="/candidate/profile" element={<CandidateProfile />} />
         </Routes>
         <Footer />
       </Router>

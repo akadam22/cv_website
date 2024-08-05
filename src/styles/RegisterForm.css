@@ -1,68 +1,80 @@
+/* Ensure the form container does not overlap with navbar or footer */
 .register {
-    width: 100%;
-    height: calc(100vh - 100px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .content {
-    width: 400px;
-    padding: 20px;
-    background-color: rgba(255, 255, 255, 0.7);
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .content h2 {
-    color: #000;
-  }
-  
-  .form-group {
-    margin-bottom: 20px;
-  }
-  
-  label {
-    display: block;
-    margin-bottom: 5px;
-    color: #000;
-  }
-  
-  input[type="text"],
-  input[type="email"],
-  input[type="password"] {
-    width: calc(100% - 30px);
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    outline: none; /* Remove outline */
-  }
-  
-  button[type="submit"] {
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    border: none;
-    border-radius: 5px;
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  button[type="submit"]:hover {
-    background-color: #0056b3;
-  }
-  
-  .form-links {
-    margin-top: 10px;
-  }
-  
-  .form-links a {
-    color: #007bff;
-    text-decoration: none;
-  }
-  
-  .form-links a:hover {
-    text-decoration: underline;
-  }
-  
+  position: relative;
+  margin: 80px auto; /* Increased top margin to move form down and bottom margin to ensure it fits */
+  padding: 20px;
+  background: rgba(249, 249, 249, 0.8); /* Slightly transparent white for better visibility */
+  border-radius: 8px; /* Rounded corners */
+  box-sizing: border-box; /* Ensure padding and border are included */
+  max-width: 1200px; /* Set a maximum width for the form */
+  width: 95%; /* Make form width responsive */
+  color: #333; /* Darker color for text */
+  text-align: center; /* Center form content */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow */
+  border: 1px solid #ddd; /* Border color */
+  margin-bottom: 60px; /* Space to ensure no overlap with footer */
+}
+
+/* Ensure the background image covers the full area */
+.background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  z-index: -1; /* Place background image behind the form */
+}
+
+/* Style the form groups */
+.form-group {
+  margin-bottom: 15px; /* Space between form fields */
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #555; /* Darker color for labels */
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group input[type="file"],
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background: rgba(249, 249, 249, 0.2); /* Slightly transparent background */
+}
+
+.form-group button {
+  background-color: #69c1e3;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  margin-top: 10px; /* Space above button */
+}
+
+.form-group button:hover {
+  background-color: #388d98;
+}
+
+/* Style for form links */
+.form-links {
+  margin-top: 20px;
+}
+
+.form-links a {
+  color: #69c1e3;
+  text-decoration: none;
+}
+
+.form-links a:hover {
+  text-decoration: underline;
+}

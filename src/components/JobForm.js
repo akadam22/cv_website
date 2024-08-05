@@ -15,15 +15,14 @@ function JobForm() {
 
   useEffect(() => {
     if (id) {
-      // Fetch job details for editing
       axios.get(`http://localhost:5000/api/jobs/${id}`)
         .then(response => {
           const job = response.data;
-          setTitle(job.JobTitle);
-          setDescription(job.JobDescription);
-          setCompany(job.Company);
-          setLocation(job.Location);
-          setSalary(job.Salary);
+          setTitle(job.title); // Fixed typo 'titlt' to 'title'
+          setDescription(job.description);
+          setCompany(job.company);
+          setLocation(job.location);
+          setSalary(job.salary);
         })
         .catch(error => {
           setError('Error fetching job details.');
@@ -36,12 +35,13 @@ function JobForm() {
     e.preventDefault();
     setError(''); // Clear previous errors
 
-    if (isNaN(salary) || parseFloat(salary) <= 0) {
-      setError('Please enter a valid salary.');
-      return;
-    }
+    const parsedSalary = parseInt(salary, 10); // Convert salary to integer
+  if (isNaN(parsedSalary) || parsedSalary <= 0) {
+    setError('Please enter a valid salary.');
+    return;
+  }
 
-    const job = { title, description, company, location, salary };
+    const job = { title, description, company, location, salary:parsedSalary };
 
     const token = localStorage.getItem('access_token');
     console.log('Access Token:', token); // Log the access token
