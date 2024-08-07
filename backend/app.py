@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, json, logging, request, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, create_refresh_token, get_jwt_identity
 import mysql.connector
@@ -16,12 +16,14 @@ app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)  # Example: 30 days
 jwt = JWTManager(app)
 
 # Database connection
+
 def create_connection():
     return mysql.connector.connect(
         host=os.getenv("DB_HOST", "localhost"),
         user=os.getenv("DB_USER", "root"),
         password=os.getenv("DB_PASSWORD", ""),
         database=os.getenv("DB_NAME", "cv_website")
+        
     )
 
 # Register Route
@@ -276,6 +278,172 @@ def delete_job(job_id):
         if cursor.rowcount == 0:
             return jsonify({"error": "Job not found"}), 404
         return jsonify({"message": "Job deleted successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+#Get candidate profile
+@app.route('/api/profile', methods=['GET'])
+@jwt_required()
+def get_profile():
+    current_user = get_jwt_identity()
+    user_id = current_user['user_id']
+    
+    logging.debug(f'Fetching profile for user_id: {user_id}')
+
+    conn = create_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    try:
+        # Fetch user profile data
+        cursor.execute("SELECT name, contact, location FROM users WHERE id = %s", (user_id,))
+        user_profile = cursor.fetchone()
+        
+        if not user_profile:
+            return jsonify({"error": "User not found"}), 404
+
+        # Fetch skills
+        cursor.execute("SELECT skill_name FROM skills WHERE user_id = %s", (user_id,))
+        user_profile['skills'] = cursor.fetchall()
+        
+        # Fetch experiences
+        cursor.execute("SELECT job_title, company, location, start_date, end_date, description FROM experience WHERE user_id = %s", (user_id,))
+        user_profile['experiences'] = cursor.fetchall()
+
+        # Fetch educations
+        cursor.execute("SELECT institution, degree, field_of_study, start_date, end_date, description FROM education WHERE user_id = %s", (user_id,))
+        user_profile['educations'] = cursor.fetchall()
+
+        return jsonify(user_profile), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
+# Add Candidate Profile
+@app.route('/api/addProfile', methods=['POST'])
+@jwt_required()
+def add_profile():
+    current_user = get_jwt_identity()
+    data = request.form
+
+    name = data.get('name')
+    contact = data.get('contact')
+    location = data.get('location')
+    skills = request.form.get('skills')
+    experiences = request.form.get('experiences')
+    educations = request.form.get('educations')
+
+    conn = create_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Add personal information
+        cursor.execute(
+            "INSERT INTO users (name, contact, location, created_at, updated_at) VALUES (%s, %s, %s, NOW(), NOW())",
+            (name, contact, location)
+        )
+        user_id = cursor.lastrowid
+
+        # Handle skills
+        if skills:
+            skill_list = json.loads(skills)
+            for skill in skill_list:
+                cursor.execute(
+                    "INSERT INTO skills (user_id, skill_name) VALUES (%s, %s)",
+                    (user_id, skill['skill_name'])
+                )
+
+        # Handle experiences
+        if experiences:
+            experience_list = json.loads(experiences)
+            for exp in experience_list:
+                cursor.execute(
+                    "INSERT INTO experience (user_id, job_title, company, location, start_date, end_date, description) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                    (user_id, exp['job_title'], exp['company'], exp['location'], exp['start_date'], exp['end_date'], exp['description'])
+                )
+
+        # Handle educations
+        if educations:
+            education_list = json.loads(educations)
+            for edu in education_list:
+                cursor.execute(
+                    "INSERT INTO education (user_id, institution, degree, field_of_study, start_date, end_date, description) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                    (user_id, edu['institution'], edu['degree'], edu['field_of_study'], edu['start_date'], edu['end_date'], edu['description'])
+                )
+
+        conn.commit()
+        return jsonify({"message": "Profile added successfully"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+    finally:
+        cursor.close()
+        conn.close()
+
+#Update Candidate Profile
+@app.route('/api/updateProfile', methods=['PUT'])
+@jwt_required()
+def update_profile():
+    current_user = get_jwt_identity()
+    data = request.form
+
+    name = data.get('name')
+    contact = data.get('contact')
+    location = data.get('location')
+    skills = request.form.get('skills')
+    experiences = request.form.get('experiences')
+    educations = request.form.get('educations')
+
+    conn = create_connection()
+    cursor = conn.cursor()
+
+    try:
+        # Update user table
+        cursor.execute(
+            "UPDATE users SET name = %s, contact = %s, location = %s, updated_at = NOW() WHERE id = %s",
+            (name, contact, location, current_user['user_id'])
+        )
+
+        # Handle skills
+        if skills:
+            skill_list = json.loads(skills)
+            cursor.execute("DELETE FROM skills WHERE user_id = %s", (current_user['user_id'],))
+            for skill in skill_list:
+                cursor.execute(
+                    "INSERT INTO skills (user_id, skill_name) VALUES (%s, %s)",
+                    (current_user['user_id'], skill['skill_name'])
+                )
+
+        # Handle experiences
+        if experiences:
+            experience_list = json.loads(experiences)
+            cursor.execute("DELETE FROM experience WHERE user_id = %s", (current_user['user_id'],))
+            for exp in experience_list:
+                cursor.execute(
+                    "INSERT INTO experience (user_id, job_title, company, location, start_date, end_date, description) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                    (current_user['user_id'], exp['job_title'], exp['company'], exp['location'], exp['start_date'], exp['end_date'], exp['description'])
+                )
+
+        # Handle educations
+        if educations:
+            education_list = json.loads(educations)
+            cursor.execute("DELETE FROM education WHERE user_id = %s", (current_user['user_id'],))
+            for edu in education_list:
+                cursor.execute(
+                    "INSERT INTO education (user_id, institution, degree, field_of_study, start_date, end_date, description) VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                    (current_user['user_id'], edu['institution'], edu['degree'], edu['field_of_study'], edu['start_date'], edu['end_date'], edu['description'])
+                )
+
+        conn.commit()
+        return jsonify({"message": "Profile updated successfully"}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

@@ -12,6 +12,8 @@ import UserManagement from './pages/UserManagement.js';
 import JobForm from './components/JobForm';
 import JobList from './components/JobList';
 import CandidateProfile from './pages/CandidateProfile.js';
+import ProfileForm from './pages/ProfileForm.js';
+import AboutUs from './pages/AboutUs.js';
 
 
 
@@ -31,7 +33,9 @@ function App() {
         <Route path='/recruiter' element={<RecruiterPage />} />
         <Route path="/recruiter/jobs" element={<JobList />} />
         <Route path="/recruiter/jobs/new" element={<JobForm />} />
-        <Route path="/candidate/profile" element={<CandidateProfile />} />
+        <Route path="/candidate/new" element={<CandidateProfile />} />
+        <Route path="/candidate/profile" element={<ProfileForm />} />
+        <Route path="/about" element={<AboutUs />} />
         </Routes>
         <Footer />
       </Router>

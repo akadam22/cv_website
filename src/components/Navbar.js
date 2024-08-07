@@ -15,7 +15,7 @@ function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem('username');
     localStorage.removeItem('role');
-    window.location.href = '/login'; // Redirect to login page or home
+    window.location.href = '/'; // Redirect to login page or home
   };
 
   return (
@@ -26,8 +26,8 @@ function Navbar() {
         </Link>
         <div className="hiddenLinks">
           <Link to="/">Home</Link>
-          <Link to="/menu">Menu</Link>
           <Link to="/about">About Us</Link>
+          <Link to="/jobs">Our Jobs</Link>
           <Link to="/contact">Contact</Link>
           <Link to="/signin">Sign In</Link>
           <button className="logout-button" onClick={handleLogout}>Logout</button>
@@ -36,8 +36,8 @@ function Navbar() {
 
       <div className="rightSide">
         <Link to="/">Home</Link>
-        <Link to="/menu">Menu</Link>
         <Link to="/about">About Us</Link>
+        <Link to="/jobs">Our Jobs</Link>
         <Link to="/contact">Contact</Link>
         <Link to="/signin">Sign In</Link>
         <button onClick={toggleNavbar}><ReorderIcon /></button>

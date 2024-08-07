@@ -24,7 +24,7 @@ function RecruiterPage() {
           <li><Link to="/recruiter/jobs">Jobs</Link></li>
           <li><Link to="/recruiter/candidates">Candidates</Link></li>
           <li><Link to="/recruiter/settings">Settings</Link></li>
-          <li><button className="logout-button" onClick={() => window.location.href = '/'}>Logout</button></li>
+          <li><button className="logout-button" onClick={() => window.location.href = '/signin'}>Logout</button></li>
         </ul>
       </div>
       <div className="main-content">

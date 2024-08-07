@@ -1,0 +1,144 @@
+.about-us {
+    font-family: Arial, sans-serif;
+    color: #0f0101;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .hero-section {
+    position: relative;
+    height: 100vh; /* Full viewport height */
+    overflow: hidden;
+  }
+  
+  .hero-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.5); /* Optional: darken the image */
+  }
+  
+  .hero-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #fff; /* Black font color */
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.0); /* Semi-transparent background */
+    border-radius: 8px; /* Optional: rounded corners */
+  }
+  
+  .hero-content h1 {
+    font-size: 3em; /* Adjust as needed */
+    margin-bottom: 10px;
+  }
+  
+  .hero-content p {
+    font-size: 1.5em; /* Adjust as needed */
+    margin: 0 0 20px;
+  }
+  
+  .cta-button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 1em;
+    color: #fff;
+    background-color: #fbaa77;
+    text-decoration: none;
+    border-radius: 4px;
+  }
+  
+  .cta-button:hover {
+    background-color: #bd7426;
+  }
+  
+  .mission-statement,
+  .company-history,
+  .core-values,
+  .contact-info {
+    margin: 40px 0;
+    padding: 20px;
+    border-radius: 8px;
+    background: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .mission-statement h2,
+  .company-history h2,
+  .core-values h2,
+  .contact-info h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
+  
+  .company-history ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .company-history li {
+    margin-bottom: 10px;
+  }
+  
+  .contact-form {
+    display: grid;
+    gap: 15px;
+  }
+  
+  .contact-form input,
+  .contact-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .contact-form button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+  }
+  
+  .contact-form button:hover {
+    background-color: #0056b3;
+  }
+  
+  .team-section {
+    margin: 40px 0;
+  }
+  
+  .team-member {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .team-member img {
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    margin-right: 20px;
+  }
+  
+  .team-member h3 {
+    margin: 0;
+    font-size: 1.2em;
+  }
+  
+  .team-member p {
+    margin: 0;
+    color: #666;
+  }
+  
