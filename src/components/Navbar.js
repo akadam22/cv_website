@@ -28,7 +28,6 @@ function Navbar() {
           <Link to="/">Home</Link>
           <Link to="/about">About Us</Link>
           <Link to="/jobs">Our Jobs</Link>
-          <Link to="/contact">Contact</Link>
           <Link to="/signin">Sign In</Link>
           <button className="logout-button" onClick={handleLogout}>Logout</button>
         </div>
@@ -38,7 +37,6 @@ function Navbar() {
         <Link to="/">Home</Link>
         <Link to="/about">About Us</Link>
         <Link to="/jobs">Our Jobs</Link>
-        <Link to="/contact">Contact</Link>
         <Link to="/signin">Sign In</Link>
         <button onClick={toggleNavbar}><ReorderIcon /></button>
       </div>

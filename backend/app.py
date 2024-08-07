@@ -1,3 +1,5 @@
+from email.mime.text import MIMEText
+import smtplib
 from flask import Flask, json, logging, request, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, create_refresh_token, get_jwt_identity
@@ -451,6 +453,29 @@ def update_profile():
     finally:
         cursor.close()
         conn.close()
+
+@app.route('/send-email', methods=['POST'])
+def send_email():
+    data = request.json
+    name = data.get('name')
+    email = data.get('email')
+    message = data.get('message')
+
+    # Setup email details
+    msg = MIMEText(f'Name: {name}\nEmail: {email}\nMessage: {message}')
+    msg['Subject'] = 'New Contact Form Submission'
+    msg['From'] = email
+    msg['To'] = 'eddiewithme31@gmail.com'
+
+    # Send email using SMTP
+    try:
+        with smtplib.SMTP('smtp.gmail.com', 587) as server:
+            server.starttls()
+            server.login('your-email@gmail.com', 'your-password')
+            server.sendmail(email, 'eddiewithme31@gmail.com', msg.as_string())
+        return jsonify({'status': 'success', 'message': 'Email sent'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

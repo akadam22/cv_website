@@ -6,6 +6,38 @@ import TeamMember2 from '../assets/team-member2.jpg';
 import TeamMember3 from '../assets/team-member3.jpg';
 
 const AboutUs = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const formData = {
+      name: e.target.name.value,
+      email: e.target.email.value,
+      message: e.target.message.value,
+    };
+
+    fetch('http://localhost:5000/send-email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok.');
+        }
+        return response.text();
+      })
+      .then(data => {
+        alert('Message sent successfully');
+        console.log(data);
+      })
+      .catch(error => {
+        alert('Failed to send message');
+        console.error('Error:', error);
+      });
+  };
+
   return (
     <div className="about-us">
       <div className="hero-section">
@@ -18,7 +50,6 @@ const AboutUs = () => {
           </div>
         </div>
       </div>
-
 
       <section className="mission-statement">
         <h2>Mission</h2>
@@ -77,10 +108,10 @@ const AboutUs = () => {
       <section className="contact-info">
         <h2>Get In Touch</h2>
         <p>If you have any questions or would like to learn more about us, feel free to contact us.</p>
-        <form className="contact-form">
-          <input type="text" placeholder="Your Name" required />
-          <input type="email" placeholder="Your Email" required />
-          <textarea placeholder="Your Message" required></textarea>
+        <form className="contact-form" onSubmit={handleSubmit}>
+          <input type="text" name="name" placeholder="Your Name" required />
+          <input type="email" name="email" placeholder="Your Email" required />
+          <textarea name="message" placeholder="Your Message" required></textarea>
           <button type="submit">Send Message</button>
         </form>
       </section>
