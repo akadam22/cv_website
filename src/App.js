@@ -14,8 +14,7 @@ import JobList from './components/JobList';
 import CandidateProfile from './pages/CandidateProfile.js';
 import ProfileForm from './pages/ProfileForm.js';
 import AboutUs from './pages/AboutUs.js';
-
-
+import OurJobs from './pages/OurJobs.js'
 
 function App() {
   return (
@@ -36,6 +35,7 @@ function App() {
         <Route path="/candidate/new" element={<CandidateProfile />} />
         <Route path="/candidate/profile" element={<ProfileForm />} />
         <Route path="/about" element={<AboutUs />} />
+        <Route path="/jobs" element= { < OurJobs />} />
         </Routes>
         <Footer />
       </Router>
