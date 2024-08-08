@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import '../styles/AboutUs.css';
 import AboutUsImage from '../assets/aboutus.jpg';
 import TeamMember1 from '../assets/team-member1.jpg';
@@ -6,37 +6,31 @@ import TeamMember2 from '../assets/team-member2.jpg';
 import TeamMember3 from '../assets/team-member3.jpg';
 
 const AboutUs = () => {
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  async function handleSubmit(event) {
+    event.preventDefault();
 
     const formData = {
-      name: e.target.name.value,
-      email: e.target.email.value,
-      message: e.target.message.value,
+        name: event.target.name.value,
+        email: event.target.email.value,
+        message: event.target.message.value
     };
 
-    fetch('http://localhost:5000/send-email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok.');
-        }
-        return response.text();
-      })
-      .then(data => {
-        alert('Message sent successfully');
-        console.log(data);
-      })
-      .catch(error => {
-        alert('Failed to send message');
+    try {
+        const response = await fetch('http://localhost:5000/send-email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+        console.log('Success:', result);
+    } catch (error) {
         console.error('Error:', error);
-      });
-  };
+    }
+}
+
 
   return (
     <div className="about-us">

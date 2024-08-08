@@ -7,27 +7,29 @@ import mysql.connector
 import bcrypt
 import os
 from datetime import datetime, timedelta
+from dotenv import load_dotenv
+
+# Load environment variables from .env
+load_dotenv()
 
 app = Flask(__name__)
-CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}, r"/send-email": {"origins": "http://localhost:3000"}})
+
 
 # JWT Configuration
-app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'  # Change this to a random secret key
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=30)  # Example: 30 minutes
-app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)  # Example: 30 days
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=30)
+app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)
 jwt = JWTManager(app)
 
 # Database connection
-
 def create_connection():
     return mysql.connector.connect(
         host=os.getenv("DB_HOST", "localhost"),
         user=os.getenv("DB_USER", "root"),
         password=os.getenv("DB_PASSWORD", ""),
         database=os.getenv("DB_NAME", "cv_website")
-        
     )
-
 # Register Route
 @app.route('/api/registerform', methods=['POST'])
 def register():
@@ -457,25 +459,42 @@ def update_profile():
 @app.route('/send-email', methods=['POST'])
 def send_email():
     data = request.json
-    name = data.get('name')
-    email = data.get('email')
-    message = data.get('message')
+    name = data.get('name', 'No name provided')
+    email = data.get('email', 'No email provided')
+    message = data.get('message', 'No message provided')
 
-    # Setup email details
-    msg = MIMEText(f'Name: {name}\nEmail: {email}\nMessage: {message}')
+    smtp_user = os.getenv('SMTP_USER')
+    smtp_pass = os.getenv('SMTP_PASS')
+
+    # Create the email content
+    email_content = f"""
+    <html>
+    <body>
+        <h2>Contact Form Submission</h2>
+        <p>Dear Team,</p>
+        <p>You have received a new message from <strong>{name}</strong> with the email <strong>{email}</strong>.</p>
+        <p><strong>Message:</strong></p>
+        <p>{message}</p>
+        <p>Please reply to this email at your earliest convenience.</p>
+        <p>Best regards,</p>
+        <p>Your Website Team</p>
+    </body>
+    </html>
+    """
+
+    msg = MIMEText(email_content, 'html')
     msg['Subject'] = 'New Contact Form Submission'
-    msg['From'] = email
+    msg['From'] = smtp_user
     msg['To'] = 'eddiewithme31@gmail.com'
 
-    # Send email using SMTP
     try:
         with smtplib.SMTP('smtp.gmail.com', 587) as server:
             server.starttls()
-            server.login('your-email@gmail.com', 'your-password')
-            server.sendmail(email, 'eddiewithme31@gmail.com', msg.as_string())
+            server.login(smtp_user, smtp_pass)
+            server.sendmail(smtp_user, 'eddiewithme31@gmail.com', msg.as_string())
         return jsonify({'status': 'success', 'message': 'Email sent'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
-
+    
 if __name__ == '__main__':
     app.run(debug=True)

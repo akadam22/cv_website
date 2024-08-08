@@ -77,7 +77,7 @@ function SignInModal() {
           </div>
 
           <div className="form-group">
-            <button type="submit" className="transparent-button">Sign In</button> {/* Transparent button */}
+            <button type="submit" className="transparent-button">Sign In</button> 
           </div>
           <div className="form-links">
             <Link to="/forgot-password">Forgot Password?</Link>

@@ -47,16 +47,19 @@ label {
 input[type="text"],
 input[type="password"] {
   width: 100%; /* Use full width */
-  padding: 10px 10px 10px 40px; /* Adjust padding to leave space for icon */
+  padding: 10px 90px; /* Adjust padding to leave space for icon */
   border: 1px solid #0f4c75; /* Dark blue */
   border-radius: 5px;
   background-color: rgba(255, 255, 255, 0.8); /* Transparent white */
+  box-sizing: border-box; /* Include padding in the width */
+  position: relative;
+  text-align:center;
 }
 
 .icon {
   position: absolute;
   top: 50%;
-  left: 10px;
+  right: 10px;
   transform: translateY(-50%);
   color: #0f4c75; /* Dark blue */
 }
@@ -98,7 +101,8 @@ button[type="submit"]:hover {
   background-color: transparent !important;
   border: none;
   border-bottom: 1px solid #ccc; /* Add bottom border for input fields */
-  padding-left: 40px; /* Adjust left padding to make space for icon */
+  padding-left: 50px; /* Adjust left padding to make space for icon */
+  position: relative; 
 }
 
 .transparent-button {
