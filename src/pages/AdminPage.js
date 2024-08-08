@@ -3,7 +3,7 @@ import axios from 'axios';
 import io from 'socket.io-client';
 import '../styles/AdminPage.css'; 
 import PieChart from '../components/PieChart';
-const socket = io('http://localhost:5000');
+
 
 function AdminPage() {
   const [stats, setStats] = useState({
@@ -13,7 +13,6 @@ function AdminPage() {
     total_recruiters: 0,
     total_jobs_posted: 0
   });
-  const [notification, setNotification] = useState('');
 
   useEffect(() => {
     axios.get('http://localhost:5000/api/stats')
@@ -24,14 +23,6 @@ function AdminPage() {
         console.error('Error fetching stats:', error);
       });
 
-    socket.on('email_notification', (data) => {
-      setNotification(data.message);
-      setTimeout(() => setNotification(''), 5000); // Hide notification after 5 seconds
-    });
-
-    return () => {
-      socket.off('email_notification');
-    };
   }, []);
 
   return (
@@ -73,11 +64,6 @@ function AdminPage() {
         <div>
         <PieChart data={stats} />
         </div>
-        {notification && (
-          <div className="notification show">
-            {notification}
-          </div>
-        )}
       </div>
     </div>
   );
