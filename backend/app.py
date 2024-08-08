@@ -9,6 +9,7 @@ import os
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
+from flask_socketio import SocketIO
 
 # Load environment variables from .env
 load_dotenv()
@@ -498,6 +499,7 @@ def update_profile():
     finally:
         cursor.close()
         conn.close()
+socketio = SocketIO(app)
 #Send Email notification from About Us Page
 @app.route('/send-email', methods=['POST'])
 def send_email():
@@ -535,6 +537,7 @@ def send_email():
             server.starttls()
             server.login(smtp_user, smtp_pass)
             server.sendmail(smtp_user, 'eddiewithme31@gmail.com', msg.as_string())
+            socketio.emit('email_notification', {'message': 'You have a new email!'})
         return jsonify({'status': 'success', 'message': 'Email sent'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
