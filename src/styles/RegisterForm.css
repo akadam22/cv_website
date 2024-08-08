@@ -1,18 +1,19 @@
 /* Ensure the form container does not overlap with navbar or footer */
 .register {
   position: relative;
-  margin: 80px auto; /* Increased top margin to move form down and bottom margin to ensure it fits */
+  margin: auto; /* Increased top margin to move form down and bottom margin to ensure it fits */
   padding: 20px;
-  background: rgba(249, 249, 249, 0.8); /* Slightly transparent white for better visibility */
+  background: rgba(249, 249, 249, 0.0); /* Slightly transparent white for better visibility */
   border-radius: 8px; /* Rounded corners */
   box-sizing: border-box; /* Ensure padding and border are included */
-  max-width: 1200px; /* Set a maximum width for the form */
+  max-width: 800px; /* Set a maximum width for the form */
   width: 95%; /* Make form width responsive */
   color: #333; /* Darker color for text */
   text-align: center; /* Center form content */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow */
   border: 1px solid #ddd; /* Border color */
   margin-bottom: 60px; /* Space to ensure no overlap with footer */
+  margin-top: 10px;
 }
 
 /* Ensure the background image covers the full area */

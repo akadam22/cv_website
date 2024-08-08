@@ -15,6 +15,7 @@ import CandidateProfile from './pages/CandidateProfile.js';
 import ProfileForm from './pages/ProfileForm.js';
 import AboutUs from './pages/AboutUs.js';
 import OurJobs from './pages/OurJobs.js'
+import ManageJobs from './pages/ManageJobs.js';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
         <Route path="/candidate/profile" element={<ProfileForm />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/jobs" element= { < OurJobs />} />
+        <Route path="/admin/jobs" element={< ManageJobs />} />
         </Routes>
         <Footer />
       </Router>

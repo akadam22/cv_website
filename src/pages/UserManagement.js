@@ -43,14 +43,54 @@ function UserManagement() {
   };
 
   const handleUpdateUser = () => {
-    // Implement user update logic here
-    closeUpdateModal();
+    if (!selectedUser) return; // Ensure there's a selected user
+  
+    const token = localStorage.getItem('jwtToken');
+    if (!token) {
+      console.error('No JWT token found. User may need to log in.');
+      return;
+    }
+  
+    axios.put(`http://localhost:5000/api/users/${selectedUser.id}`, selectedUser, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => {
+        console.log('User updated successfully:', response.data);
+        setUsers(users.map(user => (user.id === selectedUser.id ? response.data : user)));
+        closeUpdateModal();
+      })
+      .catch(error => {
+        console.error('Error updating user:', error);
+        console.log('JWT Token:', localStorage.getItem('jwtToken'));
+      });
   };
-
-  const handleDeleteUser = () => {
-    // Implement user delete logic here
-    closeDeleteModal();
+  
+  
+  const handleDeleteUser = async () => {
+    if (!selectedUser || !selectedUser.id) {
+      console.error('Selected user is invalid:', selectedUser);
+      return;
+    }
+  
+    console.log('Deleting user with ID:', selectedUser.id);
+  
+    try {
+      const response = await axios.delete(`http://localhost:5000/api/users/${selectedUser.id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('jwtToken')}`
+        }
+      });
+      console.log('User deleted successfully:', response.data);
+      setUsers(users.filter(user => user.id !== selectedUser.id));
+      closeDeleteModal();
+    } catch (error) {
+      console.error('Error deleting user:', error.response ? error.response.data : error.message);
+    }
   };
+  
 
   return (
     <div className="user-management">
@@ -68,7 +108,7 @@ function UserManagement() {
         <tbody>
           {users.map(user => (
             <tr key={user.id}>
-              <td>{user.username}</td>
+              <td>{user.name}</td>
               <td>{user.email}</td>
               <td>{user.role}</td>
               <td>
@@ -90,15 +130,21 @@ function UserManagement() {
           <div>
             <label>
               Username:
-              <input type="text" defaultValue={selectedUser.username} />
+              <input type="text"
+                value={selectedUser.name}
+                onChange={(e) => setSelectedUser({...selectedUser, name: e.target.value})} />
             </label>
             <label>
               Email:
-              <input type="email" defaultValue={selectedUser.email} />
+              <input  type="email"
+                value={selectedUser.email}
+                onChange={(e) => setSelectedUser({...selectedUser, email: e.target.value})} />
             </label>
             <label>
               Role:
-              <input type="text" defaultValue={selectedUser.role} />
+              <input type="text"
+                value={selectedUser.role}
+                onChange={(e) => setSelectedUser({...selectedUser, role: e.target.value})}/>
             </label>
             <div className="modal-buttons">
               <button onClick={handleUpdateUser}>Save</button>
@@ -109,21 +155,22 @@ function UserManagement() {
       </Modal>
 
       <Modal
-        isOpen={isDeleteModalOpen}
-        onRequestClose={closeDeleteModal}
-        contentLabel="Delete User"
-      >
-        <h2>Delete User</h2>
-        {selectedUser && (
-          <div>
-            <p>Are you sure you want to delete {selectedUser.username}?</p>
-            <div className="modal-buttons">
-              <button onClick={handleDeleteUser}>Delete</button>
-              <button onClick={closeDeleteModal}>Cancel</button>
-            </div>
-          </div>
-        )}
-      </Modal>
+  isOpen={isDeleteModalOpen}
+  onRequestClose={closeDeleteModal}
+  contentLabel="Delete User"
+>
+  <h2>Delete User</h2>
+  {selectedUser && (
+    <div>
+      <p>Are you sure you want to delete {selectedUser.name}?</p>
+      <div className="modal-buttons">
+        <button onClick={handleDeleteUser}>Delete</button>
+        <button onClick={closeDeleteModal}>Cancel</button>
+      </div>
+    </div>
+  )}
+</Modal>
+
     </div>
   );
 }
