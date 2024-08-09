@@ -1,12 +1,14 @@
 .job-listings {
     padding: 20px;
     font-family: Arial, sans-serif;
+    color: black;
   }
   
   .job-listings h1 {
     font-size: 2.5em;
     margin-bottom: 20px;
-    text-align: center;
+    text-align: center; 
+    color: black;
   }
   
   .card-container {

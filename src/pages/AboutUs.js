@@ -47,13 +47,13 @@ const AboutUs = () => {
 
       <section className="mission-statement">
         <h2>Mission</h2>
-        <p>Our mission is to streamline the recruitment process by providing an intuitive and efficient Application Tracking System (ATS) that simplifies candidate management and improves hiring outcomes. Developed as part of a Master's project in Computer Science at the University of Greenwich, this website leverages cutting-edge technologies to offer a user-friendly interface, robust functionality, and seamless integration. We are dedicated to delivering exceptional service, fostering meaningful connections between employers and candidates, and continuously enhancing our system to meet evolving industry needs.</p>
+        <p>My mission is to streamline the recruitment process by providing an intuitive and efficient Application Tracking System (ATS) that simplifies candidate management and improves hiring outcomes. Developed as part of a Master's project in Computer Science at the University of Greenwich, this website leverages cutting-edge technologies to offer a user-friendly interface, robust functionality, and seamless integration. We are dedicated to delivering exceptional service, fostering meaningful connections between employers and candidates, and continuously enhancing our system to meet evolving industry needs.</p>
       </section>
 
       <section className="company-history">
         <h2>Story</h2>
-        <p>Currently studying for a Master's in Computer Science at the University of Greenwich. Doing a dissertation on Application Tracking Systems (ATS).</p>
-        <p>Tools and Technologies used to create this project:</p>
+        <p>Currently studying for a Master's in Computer Science at the University of Greenwich. Doing a dissertation on <strong> Intelligent CV Filtering System for Enhanced Candidate Screening  </strong>.</p>
+        <p><strong>Tools and Technologies used to create this project:</strong></p>
         <ul>
           <li>React</li>
           <li>Python</li>
@@ -103,7 +103,7 @@ const AboutUs = () => {
         <h2>Get In Touch</h2>
         <p>If you have any questions or would like to learn more about us, feel free to contact us.</p>
         <form className="contact-form" onSubmit={handleSubmit}>
-          <input type="text" name="name" placeholder="Your Name" required />
+          <input name="name" placeholder="Your Name" required />
           <input type="email" name="email" placeholder="Your Email" required />
           <textarea name="message" placeholder="Your Message" required></textarea>
           <button type="submit">Send Message</button>

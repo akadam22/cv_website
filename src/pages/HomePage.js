@@ -88,7 +88,7 @@ function HomePage() {
           <div className="hero-overlay">
             <h1>Welcome to Application Tracking System.</h1>
             <p>Discover how we can help you streamline your processes.</p>
-            <Link href="/about" className="cta-button">Learn More</Link>
+            <button className="cta-button" onClick={() => window.location.href = '/about'}>Learn More</button>
           </div>
         </div>
       </div>
