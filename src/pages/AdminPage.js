@@ -32,7 +32,6 @@ function AdminPage() {
         <ul>
           <li><a href="/admin/users">Manage Users</a></li>
           <li><a href="/admin/jobs">Manage Jobs</a></li>
-          <li><a href="/admin/reports">Reports</a></li>
           <li><button className="logout-button" onClick={() => window.location.href = '/signin'}>Logout</button></li>
         </ul>
       </div>

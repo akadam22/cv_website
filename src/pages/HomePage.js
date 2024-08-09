@@ -32,7 +32,7 @@ function HomePage() {
 
   const featureDetails = {
     'Feature 1': (
-      <div>
+      <div className='feature'>
         <h3>Top Companies</h3>
         <p>Companies that we work with and are happy to join you in their big family.</p>
         <div className="company-logos">

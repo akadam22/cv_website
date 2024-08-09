@@ -6,38 +6,35 @@ function CandidateProfile() {
   const [personalInfo, setPersonalInfo] = useState({
     name: '',
     contact: '',
-    location: ''
+    location: '',
   });
   const [resume, setResume] = useState(null);
   const [skills, setSkills] = useState([]);
   const [experiences, setExperiences] = useState([]);
   const [educations, setEducations] = useState([]);
   const [isUpdate, setIsUpdate] = useState(false);
+  const [profile, setProfile] = useState([]);
+  const [error, setError] = useState([]);
+  const userId = 1;
 
   useEffect(() => {
-    axios.get('/api/profile', {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
-        'Content-Type': 'application/json',
+    console.log('Fetching profile for userId:', userId);  // Debug log
+    const fetchProfile = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/profile/${userId}`);
+        console.log('Profile data received:', response.data);  // Debug log
+        setProfile(response.data.profile);
+      } catch (error) {
+        console.error('Error fetching profile:', error);  // Debug log
+        setError(error.response?.data.error || error.message);
       }
-    })
-    .then(response => {
-      if (response.data) {
-        setPersonalInfo({
-          name: response.data.name || '',
-          contact: response.data.contact || '',
-          location: response.data.location || ''
-        });
-        setSkills(response.data.skills || []);
-        setExperiences(response.data.experience || []);
-        setEducations(response.data.education || []);
-        setIsUpdate(true);
-      }
-    })
-    .catch(error => {
-      console.error('Error fetching profile data:', error);
-    });
-  }, []);
+    };
+  
+    if (userId) {
+      fetchProfile();
+    }
+  }, [userId]);
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -72,6 +69,15 @@ function CandidateProfile() {
   const addEducation = () => setEducations([...educations, { institution: '', degree: '', field_of_study: '', start_date: '', end_date: '', description: '' }]);
 
   const handleSubmit = () => {
+    if (!personalInfo.name || !personalInfo.contact || !personalInfo.location) {
+      alert('Please fill out all personal information fields.');
+      return;
+    }
+     // Checking  if at least one skill, experience, and education is provided
+  if (!skills.length || !experiences.length || !educations.length) {
+    alert('Please add at least one skill, experience, and education.');
+    return;
+  }
     const formData = new FormData();
     formData.append('name', personalInfo.name);
     formData.append('contact', personalInfo.contact);
@@ -95,6 +101,7 @@ function CandidateProfile() {
     })
     .then(response => {
       alert('Profile saved successfully!');
+      console.log('Profile data:', response.data);
     })
     .catch(error => {
       console.error('Error saving profile:', error);

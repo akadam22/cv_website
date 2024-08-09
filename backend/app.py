@@ -112,9 +112,8 @@ def refresh_token():
     return jsonify(access_token=new_access_token), 200
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f"mysql+mysqlconnector://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@{os.getenv('DB_HOST')}/{os.getenv('DB_NAME')}"
-
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-
 # Define your models
 class Job(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -349,35 +348,8 @@ def delete_job(job_id):
         cursor.close()
         conn.close()
 #Get candidate profile
-@app.route('/api/profile', methods=['GET'])
-@jwt_required()
-def get_profile():
-    current_user = get_jwt_identity()
-    user_id = current_user['user_id']   
-    logging.debug(f'Fetching profile for user_id: {user_id}')
-    conn = create_connection()
-    cursor = conn.cursor(dictionary=True)   
-    try:
-        # Fetch user profile data
-        cursor.execute("SELECT name, contact, location FROM users WHERE id = %s", (user_id,))
-        user_profile = cursor.fetchone()        
-        if not user_profile:
-            return jsonify({"error": "User not found"}), 404
-        # Fetch skills
-        cursor.execute("SELECT skill_name FROM skills WHERE user_id = %s", (user_id,))
-        user_profile['skills'] = cursor.fetchall()       
-        # Fetch experiences
-        cursor.execute("SELECT job_title, company, location, start_date, end_date, description FROM experience WHERE user_id = %s", (user_id,))
-        user_profile['experiences'] = cursor.fetchall()
-        # Fetch educations
-        cursor.execute("SELECT institution, degree, field_of_study, start_date, end_date, description FROM education WHERE user_id = %s", (user_id,))
-        user_profile['educations'] = cursor.fetchall()
-        return jsonify(user_profile), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    finally:
-        cursor.close()
-        conn.close()
+
+
 # Add Candidate Profile
 @app.route('/api/addProfile', methods=['POST'])
 @jwt_required()
@@ -542,4 +514,5 @@ def send_email():
         return jsonify({'status': 'error', 'message': str(e)}), 500
     
 if __name__ == '__main__':
+    
     app.run(debug=True)
