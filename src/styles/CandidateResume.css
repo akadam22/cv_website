@@ -1,0 +1,51 @@
+/* Ensure the container uses full height and pushes the footer to the bottom */
+.resume-page {
+    min-height: 100vh; /* Ensure the container takes up at least the full viewport height */
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .row {
+    display: flex; /* Ensure row uses flexbox layout */
+    flex: 1; /* Allow the content area to grow and push footer to the bottom */
+  }
+  
+  .col-md-3 {
+    flex: 0 0 25%; /* Sidebar takes 25% of the width */
+    max-width: 25%; /* Prevents the sidebar from growing beyond 25% of width */
+    background-color: #f9f9f9;
+  }
+  
+  .col-md-9 {
+    flex: 1; /* Main content takes the remaining width */
+    padding: 15px;
+  }
+  .col-md-9 h1{
+    color: black;
+  }
+  
+  .resume-container {
+    margin: 0;
+  }
+  
+  .resume-section {
+    /* Center the content in the resume section */
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    position: relative;
+    margin-left: auto; /* Pushes the section to the right */
+    width: 100%;
+  }
+  
+  .upload-status {
+    margin-top: 10px;
+  }
+  
+  .error {
+    color: red;
+  }
+  
+
+  

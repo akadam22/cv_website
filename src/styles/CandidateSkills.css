@@ -1,0 +1,46 @@
+
+  /* Main content area */
+  .skills-page {
+    padding-top: 20px;
+  }
+  
+  .skills-page .form-title {
+    margin-bottom: 20px;
+    color: black;
+    text-align: center;
+  }
+ 
+  .skills-page .experience-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .skills-page .form-input {
+    margin-bottom: 15px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .skills-page .form-button {
+    padding: 10px 15px;
+    font-size: 16px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .skills-page .form-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .skills-page .experience-container {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+  }
+  

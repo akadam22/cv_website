@@ -121,6 +121,7 @@ class Job(db.Model):
 class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     role = db.Column(db.String(50))
+    
 
 @app.route('/api/stats', methods=['GET'])
 def get_stats():
@@ -347,127 +348,27 @@ def delete_job(job_id):
     finally:
         cursor.close()
         conn.close()
-#Get candidate profile
-
-
-# Add Candidate Profile
-@app.route('/api/addProfile', methods=['POST'])
+#Get Candidate Details 
+@app.route('/api/profile/<int:user_id>', methods=['GET'])
 @jwt_required()
-def add_profile():
+def get_profile(user_id):
     current_user = get_jwt_identity()
-    data = request.form
-    name = data.get('name')
-    contact = data.get('contact')
-    location = data.get('location')
-    skills = request.form.get('skills')
-    experiences = request.form.get('experiences')
-    educations = request.form.get('educations')
-    conn = create_connection()
-    cursor = conn.cursor()
-    try:
-        # Add personal information
-        cursor.execute(
-            "INSERT INTO users (name, contact, location, created_at, updated_at) VALUES (%s, %s, %s, NOW(), NOW())",
-            (name, contact, location)
-        )
-        user_id = cursor.lastrowid
-        # Handle skills
-        if skills:
-            skill_list = json.loads(skills)
-            for skill in skill_list:
-                cursor.execute(
-                    "INSERT INTO skills (user_id, skill_name) VALUES (%s, %s)",
-                    (user_id, skill['skill_name'])
-                )
-
-        # Handle experiences
-        if experiences:
-            experience_list = json.loads(experiences)
-            for exp in experience_list:
-                cursor.execute(
-                    "INSERT INTO experience (user_id, job_title, company, location, start_date, end_date, description) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                    (user_id, exp['job_title'], exp['company'], exp['location'], exp['start_date'], exp['end_date'], exp['description'])
-                )
-
-        # Handle educations
-        if educations:
-            education_list = json.loads(educations)
-            for edu in education_list:
-                cursor.execute(
-                    "INSERT INTO education (user_id, institution, degree, field_of_study, start_date, end_date, description) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                    (user_id, edu['institution'], edu['degree'], edu['field_of_study'], edu['start_date'], edu['end_date'], edu['description'])
-                )
-
-        conn.commit()
-        return jsonify({"message": "Profile added successfully"}), 200
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-    finally:
-        cursor.close()
-        conn.close()
-
-#Update Candidate Profile
-@app.route('/api/updateProfile', methods=['PUT'])
-@jwt_required()
-def update_profile():
-    current_user = get_jwt_identity()
-    data = request.form
-
-    name = data.get('name')
-    contact = data.get('contact')
-    location = data.get('location')
-    skills = request.form.get('skills')
-    experiences = request.form.get('experiences')
-    educations = request.form.get('educations')
+    if current_user['user_id'] != user_id and current_user['role'] != 'admin':
+        return jsonify({"error": "Access forbidden"}), 403
 
     conn = create_connection()
-    cursor = conn.cursor()
+    cursor = conn.cursor(dictionary=True)
 
     try:
-        # Update user table
-        cursor.execute(
-            "UPDATE users SET name = %s, contact = %s, location = %s, updated_at = NOW() WHERE id = %s",
-            (name, contact, location, current_user['user_id'])
-        )
-
-        # Handle skills
-        if skills:
-            skill_list = json.loads(skills)
-            cursor.execute("DELETE FROM skills WHERE user_id = %s", (current_user['user_id'],))
-            for skill in skill_list:
-                cursor.execute(
-                    "INSERT INTO skills (user_id, skill_name) VALUES (%s, %s)",
-                    (current_user['user_id'], skill['skill_name'])
-                )
-
-        # Handle experiences
-        if experiences:
-            experience_list = json.loads(experiences)
-            cursor.execute("DELETE FROM experience WHERE user_id = %s", (current_user['user_id'],))
-            for exp in experience_list:
-                cursor.execute(
-                    "INSERT INTO experience (user_id, job_title, company, location, start_date, end_date, description) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                    (current_user['user_id'], exp['job_title'], exp['company'], exp['location'], exp['start_date'], exp['end_date'], exp['description'])
-                )
-
-        # Handle educations
-        if educations:
-            education_list = json.loads(educations)
-            cursor.execute("DELETE FROM education WHERE user_id = %s", (current_user['user_id'],))
-            for edu in education_list:
-                cursor.execute(
-                    "INSERT INTO education (user_id, institution, degree, field_of_study, start_date, end_date, description) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                    (current_user['user_id'], edu['institution'], edu['degree'], edu['field_of_study'], edu['start_date'], edu['end_date'], edu['description'])
-                )
-
-        conn.commit()
-        return jsonify({"message": "Profile updated successfully"}), 200
-
+        query = "SELECT id, name, contact, location, email FROM users WHERE id = %s"
+        cursor.execute(query, (user_id,))
+        user = cursor.fetchone()
+        if user:
+            return jsonify({"profile": user})
+        else:
+            return jsonify({"error": "User not found"}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
     finally:
         cursor.close()
         conn.close()

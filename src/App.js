@@ -15,6 +15,10 @@ import CandidateProfile from './pages/CandidateProfile.js';
 import AboutUs from './pages/AboutUs.js';
 import OurJobs from './pages/OurJobs.js'
 import ManageJobs from './pages/ManageJobs.js';
+import CandidateResume from './pages/CandidateResume.js';
+import CandidateExperience from './pages/CandidateExperience.js';
+import CandidateEducation from './pages/CandidateEducation.js';
+import CandidateSkills from './pages/CandidateSkills.js';
 
 function App() {
   return (
@@ -36,6 +40,10 @@ function App() {
         <Route path='/about' element={< AboutUs/>} />
         <Route path="/jobs" element= { < OurJobs />} />
         <Route path="/admin/jobs" element={< ManageJobs />} />
+        <Route path="/candidate/resume" element={< CandidateResume />} />
+        <Route path="/candidate/experience" element={< CandidateExperience />} />
+        <Route path="/candidate/education" element={< CandidateEducation />} />
+        <Route path="/candidate/skills" element={< CandidateSkills />} />
         </Routes>
         <Footer />
       </Router>
