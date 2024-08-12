@@ -12,6 +12,9 @@ const app = express();
 app.use(cors()); // Enable CORS
 app.use(express.json()); // For parsing application/json
 app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
+// Serve static files from the 'uploads' directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 // Configure multer storage
 const storage = multer.diskStorage({
@@ -40,14 +43,10 @@ function authenticateJWT(req, res, next) {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
-  if (!token) return res.sendStatus(401);
+  if (token == null) return res.sendStatus(401);
 
   jwt.verify(token, 'your_jwt_secret', (err, user) => {
-    if (err) {
-      console.error('JWT verification error:', err);
-      return res.sendStatus(403);
-    }
-    console.log('Authenticated user:', user);
+    if (err) return res.sendStatus(403);
     req.user = user;
     next();
   });

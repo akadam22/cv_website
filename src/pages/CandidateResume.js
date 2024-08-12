@@ -10,23 +10,7 @@ function CandidateResume() {
   const [currentResume, setCurrentResume] = useState(null);
   const userId = 1; // Replace this with logic to get the actual userId
 
-  useEffect(() => {
-    const fetchCurrentResume = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5000/api/get-resume/${userId}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
-          },
-        });
-        setCurrentResume(response.data.resume); // Assuming response contains resume info
-      } catch (error) {
-        console.error('Error fetching current resume:', error.response?.data || error.message);
-        setError(error.response?.data.error || error.message);
-      }
-    };
-
-    fetchCurrentResume();
-  }, [userId]);
+ 
 
   const handleFileChange = (e) => {
     setResume(e.target.files[0]);
@@ -72,7 +56,7 @@ function CandidateResume() {
               {currentResume ? (
                 <div>
                   <h2>Current Resume</h2>
-                  <a href={currentResume.url} target="_blank" rel="noopener noreferrer">View Current Resume</a>
+                  <a href={`http://localhost:4000/uploads/${currentResume}`} target="_blank" rel="noopener noreferrer">View Current Resume</a>
                 </div>
               ) : (
                 <p>No resume uploaded yet.</p>
@@ -88,7 +72,7 @@ function CandidateResume() {
               <button onClick={handleUpload}>Upload Resume</button>
               <div className="upload-status">
                 {uploadStatus && <p>{uploadStatus}</p>}
-                {error && <p className="error">{error}</p>}
+                
               </div>
             </div>
           </div>

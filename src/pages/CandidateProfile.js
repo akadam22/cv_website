@@ -16,34 +16,53 @@ function CandidateProfile() {
     const fetchProfile = async () => {
       const userId = localStorage.getItem('userId');
       const jwtToken = localStorage.getItem('jwtToken');
-      
+    
       if (!userId || !jwtToken) {
         setError('User ID or JWT token is missing. Please log in again.');
         return;
       }
-
+    
       try {
         const response = await axios.get(`http://localhost:4000/api/profile/${userId}`, {
           headers: {
-            'Authorization': `Bearer ${jwtToken}`
+            'Authorization': `Bearer ${jwtToken}`,
+            'Content-Type': 'application/x-www-form-urlencoded',
           }
         });
-
-        setPersonalInfo({
-          name: response.data.name || '',
-          contact: response.data.contact || '',
-          location: response.data.location || '',
-          email: response.data.email || ''
-        });
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-        if (error.response) {
-          setError(`Error fetching profile: ${error.response.data.error}`);
+    
+        if (response.status === 200) {
+          setPersonalInfo({
+            name: response.data.name || '',
+            contact: response.data.contact || '',
+            location: response.data.location || '',
+            email: response.data.email || ''
+          });
         } else {
-          setError('Failed to fetch profile. Please try again later.');
+          setError(`Error: Received unexpected status code ${response.status}`);
+        }
+      } catch (error) {
+        // Improved error logging
+        console.error('Error fetching profile:', error);
+    
+        // Handling different types of errors
+        if (error.response) {
+          // Server responded with a status other than 2xx
+          console.error('Error response data:', error.response.data);
+          console.error('Error response status:', error.response.status);
+          console.error('Error response headers:', error.response.headers);
+          setError(`Error fetching profile: ${error.response.data.error || error.message}`);
+        } else if (error.request) {
+          // Request was made but no response received
+          console.error('Error request data:', error.request);
+          setError('Error fetching profile: No response received from server');
+        } else {
+          // Something else went wrong
+          console.error('Error message:', error.message);
+          setError(`Error fetching profile: ${error.message}`);
         }
       }
     };
+    
 
     fetchProfile();
   }, []);
