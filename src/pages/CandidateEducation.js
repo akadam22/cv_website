@@ -25,7 +25,7 @@ const CandidateEducation = () => {
   const handleUpload = async () => {
     try {
       setUploadStatus('Uploading...');
-      const response = await axios.post(`http://localhost:5000/api/upload-education/${userId}`, education, {
+      const response = await axios.post(`http://localhost:4000/api/upload-education/${userId}`, education, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`

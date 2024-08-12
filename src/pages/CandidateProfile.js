@@ -11,33 +11,42 @@ function CandidateProfile() {
     email: ''
   });
   const [error, setError] = useState(null);
-  const userId = 1; // Replace this with logic to get the actual userId from context or JWT
 
   useEffect(() => {
     const fetchProfile = async () => {
+      const userId = localStorage.getItem('userId');
+      const jwtToken = localStorage.getItem('jwtToken');
+      
+      if (!userId || !jwtToken) {
+        setError('User ID or JWT token is missing. Please log in again.');
+        return;
+      }
+
       try {
-        const token = localStorage.getItem('jwtToken');
-        const response = await axios.get(`http://localhost:5000/api/profile/${userId}`, {
+        const response = await axios.get(`http://localhost:4000/api/profile/${userId}`, {
           headers: {
-             'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${jwtToken}`
           }
         });
+
         setPersonalInfo({
-          name: response.data.profile.name || '',
-          contact: response.data.profile.contact || '',
-          location: response.data.profile.location || '',
-          email: response.data.profile.email || ''
+          name: response.data.name || '',
+          contact: response.data.contact || '',
+          location: response.data.location || '',
+          email: response.data.email || ''
         });
       } catch (error) {
-        console.error('Error fetching profile:', error.response?.data || error.message);
-        setError(error.response?.data.error || error.message);
+        console.error('Error fetching profile:', error);
+        if (error.response) {
+          setError(`Error fetching profile: ${error.response.data.error}`);
+        } else {
+          setError('Failed to fetch profile. Please try again later.');
+        }
       }
     };
 
-    if (userId) {
-      fetchProfile();
-    }
-  }, [userId]);
+    fetchProfile();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -57,7 +66,7 @@ function CandidateProfile() {
     formData.append('email', personalInfo.email);
 
     try {
-      const response = await axios.put(`http://localhost:5000/api/profile/${userId}`, formData, {
+      const response = await axios.put(`http://localhost:4000/api/profile/${localStorage.getItem('userId')}`, formData, {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
           'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
@@ -80,6 +89,7 @@ function CandidateProfile() {
         </div>
         <div className="col-md-9">
           <h1>Profile Page</h1>
+          {error && <p className="error">{error}</p>}
           <div className="profile-container">
             <div className="profile-section">
               <h2>Personal Information</h2>

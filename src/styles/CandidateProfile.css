@@ -15,7 +15,7 @@ body {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: relative; /* Ensure proper stacking context */
-  width: calc(100% - 270px); /* Adjust width based on sidebar width */
+  width: calc(70% - 200px); /* Adjust width based on sidebar width */
   margin-left: 270px; /* Space for sidebar */
 }
 

@@ -2,8 +2,10 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const mysql = require('mysql2');
+const jwt = require('jsonwebtoken');
 const cors = require('cors'); // Make sure to use CORS
 
+const port = 4000;
 const app = express();
 
 // Middleware
@@ -23,29 +25,55 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Create MySQL connection
-const connection = mysql.createConnection({
+// Create MySQL connection pool
+const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'cv_website' // Ensure this is the correct database name
+  database: 'cv_website', // Ensure this is the correct database name
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0
 });
 
-// Endpoint to upload resume
-app.post('/api/upload-resume/:userId', upload.single('resume'), (req, res) => {
+function authenticateJWT(req, res, next) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) return res.sendStatus(401);
+
+  jwt.verify(token, 'your_jwt_secret', (err, user) => {
+    if (err) {
+      console.error('JWT verification error:', err);
+      return res.sendStatus(403);
+    }
+    console.log('Authenticated user:', user);
+    req.user = user;
+    next();
+  });
+}
+
+
+// Endpoint to upload or update resume
+app.post('/api/upload-resume/:userId', upload.single('resume'), async (req, res) => {
   const userId = req.params.userId;
   const filePath = req.file.path.replace(/\\/g, '/'); // Normalize the path
   const uploadedAt = new Date();
 
-  // Save file path and other info to database
-  const query = 'INSERT INTO resume (user_id, file_path, uploaded_at) VALUES (?, ?, ?)';
-  connection.query(query, [userId, filePath, uploadedAt], (err, results) => {
-    if (err) {
-      console.error('Database error:', err);
-      return res.status(500).json({ error: 'Database error' });
+  try {
+    const [rows] = await pool.promise().query('SELECT file_path FROM resume WHERE user_id = ?', [userId]);
+
+    if (rows.length > 0) {
+      await pool.promise().query('UPDATE resume SET file_path = ?, uploaded_at = ? WHERE user_id = ?', [filePath, uploadedAt, userId]);
+      res.status(200).json({ message: 'Resume updated successfully', filePath });
+    } else {
+      await pool.promise().query('INSERT INTO resume (user_id, file_path, uploaded_at) VALUES (?, ?, ?)', [userId, filePath, uploadedAt]);
+      res.status(200).json({ message: 'Resume uploaded successfully', filePath });
     }
-    res.status(200).json({ message: 'File uploaded successfully', filePath });
-  });
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(500).json({ error: 'Database error' });
+  }
 });
 
 // Endpoint to upload work experience
@@ -54,7 +82,7 @@ app.post('/api/upload-experience/:userId', (req, res) => {
   const { job_title, company, location, start_date, end_date, description } = req.body;
 
   const query = 'INSERT INTO experience (user_id, job_title, company, location, start_date, end_date, description) VALUES (?, ?, ?, ?, ?, ?, ?)';
-  connection.query(query, [
+  pool.query(query, [
     userId, 
     job_title || 'NA', 
     company || 'NA', 
@@ -64,6 +92,7 @@ app.post('/api/upload-experience/:userId', (req, res) => {
     description || 'NA'
   ], (err, results) => {
     if (err) {
+      console.error('Database error:', err);
       return res.status(500).json({ error: 'Database error' });
     }
     res.status(200).json({ message: 'Experience uploaded successfully' });
@@ -75,10 +104,9 @@ app.post('/api/upload-education/:userId', (req, res) => {
   const userId = req.params.userId;
   const { institution, degree, field_of_study, start_date, end_date, description } = req.body;
 
-  // SQL query to insert the education data
   const query = 'INSERT INTO education (user_id, institution, degree, field_of_study, start_date, end_date, description) VALUES (?, ?, ?, ?, ?, ?, ?)';
   
-  connection.query(query, [
+  pool.query(query, [
     userId, 
     institution || 'NA', 
     degree || 'NA', 
@@ -94,13 +122,14 @@ app.post('/api/upload-education/:userId', (req, res) => {
     res.status(200).json({ message: 'Education uploaded successfully' });
   });
 });
+
 // Endpoint to upload skills
 app.post('/api/upload-skills/:userId', (req, res) => {
   const userId = req.params.userId;
   const { skill_name, proficiency, years_of_experience, description } = req.body;
 
   const query = 'INSERT INTO skills (user_id, skill_name, proficiency, years_of_experience, description) VALUES (?, ?, ?, ?, ?)';
-  connection.query(query, [
+  pool.query(query, [
     userId,
     skill_name || 'NA',
     proficiency || 'NA',
@@ -115,8 +144,35 @@ app.post('/api/upload-skills/:userId', (req, res) => {
   });
 });
 
+app.get('/api/profile/:user_id', authenticateJWT, (req, res) => {
+  const { user_id } = req.params;
+  const currentUser = req.user;
 
-// Start server
-app.listen(5000, () => {
-  console.log('Server started on http://localhost:5000');
+  if (parseInt(user_id) !== currentUser.user_id && currentUser.role !== 'admin') {
+    console.error('Unauthorized access attempt:', {
+      requestedUserId: user_id,
+      currentUserId: currentUser.user_id,
+      userRole: currentUser.role
+    });
+    return res.status(403).json({ error: 'Unauthorized access' });
+  }
+
+  connection.query('SELECT name, contact, location, email FROM users WHERE id = ?', [user_id], (error, results) => {
+    if (error) {
+      console.error('Database error:', error);
+      return res.status(500).json({ error: 'Database error' });
+    }
+
+    if (results.length > 0) {
+      res.json(results[0]);
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  });
+});
+
+
+
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
 });

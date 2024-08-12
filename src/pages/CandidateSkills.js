@@ -21,7 +21,7 @@ const CandidateSkills = () => {
   const handleUpload = async () => {
     try {
       const userId = 1; // Replace with dynamic user ID if necessary
-      const response = await axios.post(`http://localhost:5000/api/upload-skills/${userId}`, formData);
+      const response = await axios.post(`http://localhost:4000/api/upload-skills/${userId}`, formData);
       console.log('Success:', response.data.message);
     } catch (error) {
       console.error('Error uploading skills:', error.response ? error.response.data : error.message);

@@ -72,29 +72,33 @@ def register():
     finally:
         cursor.close()
         conn.close()
-# Login Route
 @app.route('/api/signin', methods=['POST'])
 def login():
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
+    
     if not username or not password:
         return jsonify({"error": "Username and password are required"}), 400
-    password = password.encode('utf-8')
+    
     conn = create_connection()
     cursor = conn.cursor(dictionary=True)
+    
     try:
         cursor.execute("SELECT * FROM users WHERE name = %s", (username,))
         user = cursor.fetchone()
-        if user and bcrypt.checkpw(password, user['password_hash'].encode('utf-8')):
+        
+        if user and bcrypt.checkpw(password.encode('utf-8'), user['password_hash'].encode('utf-8')):
             access_token = create_access_token(identity={'user_id': user['id'], 'username': user['name'], 'role': user['role']})
             refresh_token = create_refresh_token(identity={'user_id': user['id'], 'username': user['name'], 'role': user['role']})
+            
             return jsonify({
                 "message": "Login successful",
                 "access_token": access_token,
                 "refresh_token": refresh_token,
                 "username": user['name'],
-                "role": user['role']
+                "role": user['role'],
+                "userId": user['id']  # Make sure this is consistent with React
             }), 200
         else:
             return jsonify({"error": "Invalid username or password"}), 400
@@ -103,6 +107,7 @@ def login():
     finally:
         cursor.close()
         conn.close()
+
 # Refresh Token Route
 @app.route('/api/token/refresh', methods=['POST'])
 @jwt_required(refresh=True)

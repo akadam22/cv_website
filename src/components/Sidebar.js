@@ -16,6 +16,7 @@ function Sidebar() {
       <br /><br /><br /><br></br>
       <h2>Candidate Profile</h2>
       <ul>
+      <li><Link to="/candidate">Home</Link></li>
         <li><Link to="/candidate/new">My Profile</Link></li>
         <li><Link to="/candidate/jobs">Jobs</Link></li>
         <li><Link to="/candidate/resume">Resume Upload</Link></li>

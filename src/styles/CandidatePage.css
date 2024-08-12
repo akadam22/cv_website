@@ -4,17 +4,34 @@
   min-height: 100vh;
   display: flex;
   align-items: flex-start;
-  justify-content: center;
+  background-color: #f8f9fa; /* Light background for consistency */
 }
 
 .sidebar {
-  background: #f8f9fa;
+  background: #ffffff; /* White background for sidebar */
   padding: 20px;
   border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for modern look */
+  width: 250px; /* Fixed width for sidebar */
+}
+
+.welcome-message {
+  margin-left: 270px; /* Space between sidebar and welcome message */
+  padding: 20px;
+  background-color: #ffffff; /* White background to match resume page */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for modern look */
+  flex: 1; /* Allow welcome message to take up remaining space */
+}
+
+.welcome-message h1 {
+  font-size: 24px;
+  color: #333; /* Dark text color for visibility */
 }
 
 .sidebar h2 {
   margin-bottom: 20px;
+  color: #333; /* Dark text color for better readability */
 }
 
 .sidebar ul {
@@ -36,73 +53,6 @@
 }
 
 .sidebar ul li a:hover, .sidebar ul li button:hover {
-  background: #1a252f;
+  background: #1a252f; /* Darker background on hover */
   color: #fff;
-}
-
-.logout-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-}
-
-.card {
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.card-header {
-  background: #1a252f;
-  color: #fff;
-  border-radius: 10px 10px 0 0;
-  padding: 20px;
-}
-
-.card-body {
-  padding: 20px;
-}
-
-.profile-photo img {
-  width: 150px;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 5px solid #1a252f;
-}
-
-.profile-photo input[type="file"] {
-  margin-top: 15px;
-  display: block;
-  width: 100%;
-  color: black;
-}
-
-.btn-primary {
-  background-color: #1a252f;
-  border: none;
-  color: #fff;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  display: flex;
-
-}
-
-.btn-primary:hover {
-  background-color: #1a252f;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  font-weight: bold;
-}
-
-.form-control {
-  border-radius: 5px;
-  padding: 10px;
-  font-size: 16px;
 }

@@ -6,22 +6,25 @@ import SignImage from '../assets/image5.jpeg';
 import '../styles/SignInModal.css';
 
 function SignInModal() {
-  const [formData, setFormData] = useState({ username: '', password: '' }); // Changed 'email' to 'username'
+  const [formData, setFormData] = useState({ username: '', password: '' });
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
         const res = await axios.post('http://localhost:5000/api/signin', {
-            username: formData.username,  // Ensure this matches your backend expectation
+            username: formData.username,
             password: formData.password
         });
-        const { access_token, username, role } = res.data;
+
+        const { access_token, username, role, userId } = res.data;
 
         // Save access token and user data in localStorage
         localStorage.setItem('access_token', access_token);
         localStorage.setItem('username', username);
         localStorage.setItem('role', role);
+        localStorage.setItem('userId', userId); // Use userId from response
+        localStorage.setItem('jwtToken', access_token); // Assuming jwtToken is the access token
 
         alert('Login successful');
 
@@ -43,7 +46,7 @@ function SignInModal() {
         console.error('Error signing in:', error);
         alert('Invalid username or password. Please try again.');
     }
-};
+  };
 
   return (
     <div className="sign">
@@ -54,12 +57,12 @@ function SignInModal() {
           <div className="form-group">
             <input
               type="text"
-              id="username" // Changed from 'email' to 'username'
-              value={formData.username} // Changed from 'email' to 'username'
-              onChange={(e) => setFormData({ ...formData, username: e.target.value })} // Changed from 'email' to 'username'
-              placeholder="Username" // Changed placeholder text
-              className="transparent-input" // Add class for transparent input
-              autoComplete="username" // Add autocomplete attribute
+              id="username"
+              value={formData.username}
+              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+              placeholder="Username"
+              className="transparent-input"
+              autoComplete="username"
             />
             <RiUserFill className="icon" /> {/* User icon */}
           </div>
@@ -70,14 +73,14 @@ function SignInModal() {
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               placeholder="Password"
-              className="transparent-input" // Add class for transparent input
-              autoComplete="current-password" // Add autocomplete attribute
+              className="transparent-input"
+              autoComplete="current-password"
             />
             <RiLockPasswordFill className="icon" /> {/* Password icon */}
           </div>
 
           <div className="form-group">
-            <button type="submit" className="transparent-button">Sign In</button> 
+            <button type="submit" className="transparent-button">Sign In</button>
           </div>
           <div className="form-links">
             <Link to="/forgot-password">Forgot Password?</Link>
