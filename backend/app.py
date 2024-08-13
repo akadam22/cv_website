@@ -94,7 +94,8 @@ def login():
         if user and bcrypt.checkpw(password.encode('utf-8'), user['password_hash'].encode('utf-8')):
             access_token = create_access_token(identity={'user_id': user['id'], 'username': user['name'], 'role': user['role']})
             refresh_token = create_refresh_token(identity={'user_id': user['id'], 'username': user['name'], 'role': user['role']})
-            
+           
+
             return jsonify({
                 "message": "Login successful",
                 "access_token": access_token,
@@ -421,6 +422,12 @@ def send_email():
         return jsonify({'status': 'success', 'message': 'Email sent'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
+
+@app.errorhandler(500)
+def handle_internal_error(error):
+    app.logger.error(f"Internal Server Error: {error}")
+    return jsonify({"error": "An internal error occurred. Please try again later."}), 500
+
 
 if __name__ == '__main__':
     

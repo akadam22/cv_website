@@ -8,9 +8,8 @@ function CandidateResume() {
   const [uploadStatus, setUploadStatus] = useState('');
   const [error, setError] = useState(null);
   const [currentResume, setCurrentResume] = useState(null);
-  const userId = 1; // Replace this with logic to get the actual userId
+  const userId = localStorage.getItem('userId'); // Fetch the actual userId from local storage or context
 
- 
 
   const handleFileChange = (e) => {
     setResume(e.target.files[0]);

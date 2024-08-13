@@ -7,6 +7,10 @@ function CandidateJob() {
   const [jobs, setJobs] = useState([]);
   const [filters, setFilters] = useState({ title: '', location: '', company: '' });
   const [error, setError] = useState(null);
+  const [coverLetter, setCoverLetter] = useState('');
+
+  // Get userId from localStorage or sessionStorage
+  const userId = localStorage.getItem('userId');
 
   const fetchJobs = async () => {
     try {
@@ -18,7 +22,6 @@ function CandidateJob() {
       setError(err.response?.data?.error || err.message);
     }
   };
-  
 
   useEffect(() => {
     fetchJobs();
@@ -30,6 +33,25 @@ function CandidateJob() {
 
   const handleSearch = () => {
     fetchJobs();
+  };
+
+  const handleApply = async (jobId) => {
+    if (!userId) {
+      alert('You need to be logged in to apply for jobs.');
+      return;
+    }
+
+    try {
+      await axios.post(`http://localhost:4000/api/jobs/${jobId}/apply`, {
+        userId,
+        resumeId: null,
+       
+      });
+      alert('Application submitted successfully');
+      
+    } catch (err) {
+      alert('Error applying for the job. Please Upload Your Resume.');
+    }
   };
 
   return (
@@ -74,7 +96,8 @@ function CandidateJob() {
                   <p><strong>Location:</strong> {job.location}</p>
                   <p><strong>Salary:</strong> ${job.salary}</p>
                   <p>{job.description}</p>
-                  <a href={`/job/${job.id}`} className="btn btn-primary">View Details</a>
+                
+                  <button onClick={() => handleApply(job.id)}>Apply</button>
                 </div>
               ))
             ) : (

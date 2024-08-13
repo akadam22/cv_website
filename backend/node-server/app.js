@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
@@ -8,6 +9,7 @@ const port = 4000;
 const app = express();
 const jobRoutes = require('./routes/jobs'); // Import job routes
 const pool = require('./db');
+// const sendEmail = require('./utils/email');
 
 // Middleware
 app.use(cors()); // Enable CORS
@@ -36,7 +38,7 @@ function authenticateJWT(req, res, next) {
 
   if (token == null) return res.sendStatus(401);
 
-  jwt.verify(token, 'your_jwt_secret', (err, user) => {
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) return res.sendStatus(403);
     req.user = user;
     next();
@@ -51,6 +53,13 @@ app.post('/api/upload-resume/:userId', upload.single('resume'), async (req, res)
   const uploadedAt = new Date();
 
   try {
+    // Ensure that userId is valid and exists in the database if necessary
+    const [userRows] = await pool.promise().query('SELECT id FROM users WHERE id = ?', [userId]);
+
+    if (userRows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
     const [rows] = await pool.promise().query('SELECT file_path FROM resume WHERE user_id = ?', [userId]);
 
     if (rows.length > 0) {
@@ -65,6 +74,7 @@ app.post('/api/upload-resume/:userId', upload.single('resume'), async (req, res)
     res.status(500).json({ error: 'Database error' });
   }
 });
+
 
 // Endpoint to upload work experience
 app.post('/api/upload-experience/:userId', (req, res) => {
@@ -174,6 +184,7 @@ app.get('/api/education/:userId', authenticateJWT, (req, res) => {
 });
 
 app.use('/api', jobRoutes);
+// app.use('/api', sendEmail);
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
