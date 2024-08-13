@@ -108,7 +108,7 @@ function CandidateProfile() {
         </div>
         <div className="col-md-9">
           <h1>Profile Page</h1>
-          {error && <p className="error">{error}</p>}
+    
           <div className="profile-container">
             <div className="profile-section">
               <h2>Personal Information</h2>

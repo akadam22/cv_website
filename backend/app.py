@@ -10,6 +10,9 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 from flask_socketio import SocketIO
+import fitz  # PyMuPDF for PDF
+from docx import Document 
+import spacy
 
 # Load environment variables from .env
 load_dotenv()
@@ -418,7 +421,7 @@ def send_email():
         return jsonify({'status': 'success', 'message': 'Email sent'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
-    
+
 if __name__ == '__main__':
     
     app.run(debug=True)

@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../styles/CandidateExperience.css'; // Reusing the same CSS file
+import '../styles/CandidateExperience.css';
 import Sidebar from '../components/Sidebar';
-import Footer from '../components/Footer'; // Import Footer component
 
 const CandidateEducation = () => {
   const [education, setEducation] = useState({
@@ -13,9 +12,28 @@ const CandidateEducation = () => {
     end_date: '',
     description: '',
   });
+  const [educationList, setEducationList] = useState([]);
   const [uploadStatus, setUploadStatus] = useState('');
   const [error, setError] = useState(null);
   const userId = 1; // Replace this with logic to get the actual userId from context or JWT
+
+  useEffect(() => {
+    const fetchEducation = async () => {
+      try {
+        const response = await axios.get(`http://localhost:4000/api/education/${userId}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+          },
+        });
+        setEducationList(response.data);
+      } catch (error) {
+        console.error('Error fetching education data:', error.response?.data || error.message);
+        setError(error.response?.data.error || error.message);
+      }
+    };
+
+    fetchEducation();
+  }, [userId]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -33,6 +51,13 @@ const CandidateEducation = () => {
       });
       setUploadStatus('Upload successful!');
       console.log('Education upload response:', response.data);
+      // Optionally, refresh the list of education data
+      const updatedResponse = await axios.get(`http://localhost:4000/api/education/${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+        },
+      });
+      setEducationList(updatedResponse.data);
     } catch (error) {
       console.error('Error uploading education:', error.response?.data || error.message);
       setError(error.response?.data.error || error.message);
@@ -40,20 +65,31 @@ const CandidateEducation = () => {
     }
   };
 
+  const handleDelete = async (educationId) => {
+    try {
+      await axios.delete(`http://localhost:4000/api/delete-education/${userId}/${educationId}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+        },
+      });
+      setEducationList(educationList.filter(item => item.id !== educationId));
+    } catch (error) {
+      console.error('Error deleting education data:', error.response?.data || error.message);
+      setError(error.response?.data.error || error.message);
+    }
+  };
+
   return (
-    <div className="experience-page container">
+    <div className="education-page container">
       <div className="row">
-        {/* Sidebar */}
         <div className="col-md-3">
           <Sidebar />
         </div>
-
-        {/* Main Content Area */}
         <div className="col-md-9">
           <br/><br/><br/>
-          <h1>Upload Your Education</h1>
-          <div className="experience-container">
-            <div className="experience-section">
+          <h1>Manage Your Education</h1>
+          <div className="education-container">
+            <div className="education-section">
               <label>
                 Institution*:
                 <input
@@ -110,9 +146,10 @@ const CandidateEducation = () => {
               <button onClick={handleUpload}>Upload Education</button>
               <div className="upload-status">
                 {uploadStatus && <p>{uploadStatus}</p>}
-                {error && <p className="error">{error}</p>}
+               
               </div>
             </div>
+            
           </div>
         </div>
       </div>

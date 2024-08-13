@@ -4,9 +4,10 @@ const path = require('path');
 const mysql = require('mysql2');
 const jwt = require('jsonwebtoken');
 const cors = require('cors'); // Make sure to use CORS
-
 const port = 4000;
 const app = express();
+const jobRoutes = require('./routes/jobs'); // Import job routes
+const pool = require('./db');
 
 // Middleware
 app.use(cors()); // Enable CORS
@@ -28,16 +29,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// Create MySQL connection pool
-const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'cv_website', // Ensure this is the correct database name
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
 
 function authenticateJWT(req, res, next) {
   const authHeader = req.headers['authorization'];
@@ -170,7 +161,19 @@ app.get('/api/profile/:user_id', authenticateJWT, (req, res) => {
   });
 });
 
+// Endpoint to fetch education data
+app.get('/api/education/:userId', authenticateJWT, (req, res) => {
+  const userId = req.params.userId;
 
+  connection.query('SELECT * FROM education WHERE user_id = ?', [userId], (error, results) => {
+    if (error) {
+      return res.status(500).json({ error: error.message });
+    }
+    res.json(results);
+  });
+});
+
+app.use('/api', jobRoutes);
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

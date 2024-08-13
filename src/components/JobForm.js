@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import '../styles/JobForm.css';
+import Sidebar from './Sidebar';
 
 function JobForm() {
   const [title, setTitle] = useState('');
@@ -79,6 +80,8 @@ function JobForm() {
   };
 
   return (
+    <div>
+      <Sidebar/>
     <div className="job-form-container">
       <br /><br /><br />
       <div className="job-form">
@@ -142,6 +145,7 @@ function JobForm() {
           <button type="submit">{id ? 'Update Job' : 'Post Job'}</button>
         </form>
       </div>
+    </div>
     </div>
   );
 }

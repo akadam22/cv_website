@@ -109,7 +109,7 @@ function CandidateExperience() {
               <button onClick={handleUpload}>Upload Experience</button>
               <div className="upload-status">
                 {uploadStatus && <p>{uploadStatus}</p>}
-                {error && <p className="error">{error}</p>}
+               
               </div>
             </div>
           </div>

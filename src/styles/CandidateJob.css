@@ -1,0 +1,77 @@
+.job-search-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Full viewport height */
+    padding: 20px;
+  }
+  
+  .filters {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .filters input {
+    padding: 10px;
+    margin-right: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  
+  .filters button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .job-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    flex: 1; /* Allows this section to grow and push the footer down */
+  }
+  
+  .job-card {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    color: black;
+  }
+  
+  .job-card h2 {
+    margin: 0 0 10px;
+    color: black;
+  }
+  
+  .job-card p {
+    margin: 5px 0;
+    color: black;
+  }
+  
+  .job-card .btn {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 10px;
+  }
+  
+  .job-card .btn:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Add a footer class to manage footer styling within this page */
+  .job-footer {
+    background: #f1f1f1;
+    padding: 10px;
+    text-align: center;
+    width: 100%;
+    position: relative;
+    bottom: 0;
+  }
+  

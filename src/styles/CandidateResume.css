@@ -36,7 +36,7 @@
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
     position: relative;
     margin-left: auto; /* Pushes the section to the right */
-    width: 100%;
+    width: 90%;
   }
   .resume-section p{
     color: black;

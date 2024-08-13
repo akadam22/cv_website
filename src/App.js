@@ -19,6 +19,7 @@ import CandidateResume from './pages/CandidateResume.js';
 import CandidateExperience from './pages/CandidateExperience.js';
 import CandidateEducation from './pages/CandidateEducation.js';
 import CandidateSkills from './pages/CandidateSkills.js';
+import CandidateJob from './pages/CandidateJob.js';
 
 function App() {
   return (
@@ -44,6 +45,7 @@ function App() {
         <Route path="/candidate/experience" element={< CandidateExperience />} />
         <Route path="/candidate/education" element={< CandidateEducation />} />
         <Route path="/candidate/skills" element={< CandidateSkills />} />
+        <Route path="/candidate/jobs" element={< CandidateJob />} />
         </Routes>
         <Footer />
       </Router>
