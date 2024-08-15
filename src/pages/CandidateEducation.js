@@ -15,7 +15,7 @@ const CandidateEducation = () => {
   const [educationList, setEducationList] = useState([]);
   const [uploadStatus, setUploadStatus] = useState('');
   const [error, setError] = useState(null);
-  const userId = 1; // Replace this with logic to get the actual userId from context or JWT
+  const userId = localStorage.getItem('userId');
 
   useEffect(() => {
     const fetchEducation = async () => {

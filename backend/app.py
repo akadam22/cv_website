@@ -75,6 +75,7 @@ def register():
     finally:
         cursor.close()
         conn.close()
+# Example of proper cursor management
 @app.route('/api/signin', methods=['POST'])
 def login():
     data = request.get_json()
@@ -94,15 +95,13 @@ def login():
         if user and bcrypt.checkpw(password.encode('utf-8'), user['password_hash'].encode('utf-8')):
             access_token = create_access_token(identity={'user_id': user['id'], 'username': user['name'], 'role': user['role']})
             refresh_token = create_refresh_token(identity={'user_id': user['id'], 'username': user['name'], 'role': user['role']})
-           
-
             return jsonify({
                 "message": "Login successful",
                 "access_token": access_token,
                 "refresh_token": refresh_token,
                 "username": user['name'],
                 "role": user['role'],
-                "userId": user['id']  # Make sure this is consistent with React
+                "userId": user['id']
             }), 200
         else:
             return jsonify({"error": "Invalid username or password"}), 400

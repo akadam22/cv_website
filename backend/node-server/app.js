@@ -9,7 +9,10 @@ const port = 4000;
 const app = express();
 const jobRoutes = require('./routes/jobs'); // Import job routes
 const pool = require('./db');
-// const sendEmail = require('./utils/email');
+const StatusRoute = require('./routes/candidatejobstatus')
+const RecJobApplication = require('./routes/recruiterjobapplications')
+const jobMatching = require('./routes/jobmatching')
+
 
 // Middleware
 app.use(cors()); // Enable CORS
@@ -184,7 +187,10 @@ app.get('/api/education/:userId', authenticateJWT, (req, res) => {
 });
 
 app.use('/api', jobRoutes);
-// app.use('/api', sendEmail);
+app.use('/api', StatusRoute);
+app.use('./api', RecJobApplication);
+app.use('/api', jobMatching);
+
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

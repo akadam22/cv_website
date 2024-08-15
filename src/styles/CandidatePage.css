@@ -1,9 +1,10 @@
+/* CandidatePage.css */
+
 .candidate-page {
   font-family: 'Arial', sans-serif;
   padding: 20px;
   min-height: 100vh;
   display: flex;
-  align-items: flex-start;
   background-color: #f8f9fa; /* Light background for consistency */
 }
 
@@ -13,20 +14,57 @@
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for modern look */
   width: 250px; /* Fixed width for sidebar */
+  margin-right: 20px; /* Space between sidebar and main content */
 }
 
-.welcome-message {
-  margin-left: 270px; /* Space between sidebar and welcome message */
+.main-content {
+  flex: 1; /* Allow main content to take up remaining space */
+  background-color: #ffffff; /* White background to match sidebar */
   padding: 20px;
-  background-color: #ffffff; /* White background to match resume page */
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for modern look */
-  flex: 1; /* Allow welcome message to take up remaining space */
 }
 
-.welcome-message h1 {
-  font-size: 24px;
+h1, h2 {
   color: #333; /* Dark text color for visibility */
+  margin-bottom: 20px; /* Space below headings */
+}
+
+h1 {
+  font-size: 28px;
+}
+
+h2 {
+  font-size: 22px;
+  border-bottom: 2px solid #e9ecef; /* Underline for headings */
+  padding-bottom: 10px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+table, th, td {
+  border: 1px solid #dee2e6;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+}
+
+thead {
+  background-color: #f1f1f1; /* Light background for table header */
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9; /* Zebra stripes for table rows */
+}
+
+tbody tr:hover {
+  background-color: #f1f1f1; /* Highlight row on hover */
 }
 
 .sidebar h2 {
@@ -50,9 +88,30 @@
   display: block;
   padding: 10px;
   border-radius: 5px;
+  transition: background-color 0.3s, color 0.3s;
 }
 
 .sidebar ul li a:hover, .sidebar ul li button:hover {
   background: #1a252f; /* Darker background on hover */
   color: #fff;
+}
+.main-content h2,table{
+  color: black;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .candidate-page {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 20px; /* Space between sidebar and main content on mobile */
+  }
+
+  .main-content {
+    padding: 15px;
+  }
 }

@@ -15,7 +15,7 @@ function CandidateExperience() {
   });
   const [uploadStatus, setUploadStatus] = useState('');
   const [error, setError] = useState(null);
-  const userId = 1; // Replace this with logic to get the actual userId from context or JWT
+  const userId = localStorage.getItem('userId');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
