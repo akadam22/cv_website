@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/RecruiterPage.css';
-import Sidebar from '../components/Sidebar';
+import { Link } from 'react-router-dom';
 
 function RecruiterPage() {
   const [jobs, setJobs] = useState([]);
@@ -33,7 +33,18 @@ function RecruiterPage() {
 
   return (
     <div className="recruiter-page">
-      <Sidebar />
+     <div className="sidebar">
+        <br />
+        <br />
+        <br />
+        <h2>Recruiter Dashboard</h2>
+        <ul>
+          <li><Link to="/recruiter/jobs">Jobs</Link></li>
+          <li><Link to="/recruiter/candidates">Candidates</Link></li>
+          <li><Link to="/recruiter/settings">Settings</Link></li>
+          <li><button className="logout-button" onClick={() => window.location.href = '/signin'}>Logout</button></li>
+        </ul>
+      </div>
       <div className="main-content">
         <h1>Recruiter Dashboard</h1>
         <h2>Job Applications</h2>

@@ -27,13 +27,33 @@ const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/'); // Directory where files will be saved
   },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // Unique file name
+  filename: async (req, file, cb) => {
+    try {
+      const userId = req.params.userId;
+      
+      // Fetch the username from the database
+      const [userRows] = await pool.promise().query('SELECT name FROM users WHERE id = ?', [userId]);
+
+      if (userRows.length === 0) {
+        return cb(new Error('User not found'), false); // Return error if user is not found
+      }
+
+      const name = userRows[0].name; // Use 'username' instead of 'name'
+
+      // Format the file name with the username
+      const extension = path.extname(file.originalname);
+      const newFilename = `${name}_Resume${extension}`; // Use 'username' to create the file name
+
+      cb(null, newFilename); // Save the file with the new filename
+    } catch (error) {
+      console.error('Error fetching username:', error);
+      cb(error, false); // Handle any errors that occur while fetching the username
+    }
   }
 });
 
-const upload = multer({ storage });
 
+const upload = multer({ storage });
 
 function authenticateJWT(req, res, next) {
   const authHeader = req.headers['authorization'];
