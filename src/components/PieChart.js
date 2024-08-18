@@ -9,7 +9,7 @@ ChartJS.register(Title, Tooltip, Legend, ArcElement);
 const PieChart = ({ data }) => {
   // Construct chart data
   const chartData = {
-    labels: ['Total Jobs', 'Total Users', 'Total Admins', 'Total Recruiters', 'Total Jobs Posted'],
+    labels: ['Total Jobs', 'Total Users', 'Total Admins', 'Total Recruiters', 'Total Jobs Applied'],
     datasets: [
       {
         data: [
@@ -17,7 +17,7 @@ const PieChart = ({ data }) => {
           data.total_users,
           data.total_admins,
           data.total_recruiters,
-          data.total_jobs_posted
+          data.total_jobs_applied
         ],
         backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#FF5722', '#9C27B0'],
         borderColor: '#fff',

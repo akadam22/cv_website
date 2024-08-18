@@ -130,6 +130,12 @@ class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     role = db.Column(db.String(50))
     
+class JobApplication(db.Model):
+    __tablename__ = 'jobapplication' 
+    id = db.Column(db.Integer, primary_key=True)
+    job_id = db.Column(db.Integer, db.ForeignKey('job.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    application_date = db.Column(db.DateTime, default=db.func.current_timestamp())
 
 @app.route('/api/stats', methods=['GET'])
 def get_stats():
@@ -139,14 +145,14 @@ def get_stats():
         total_users = Users.query.count()
         total_admins = Users.query.filter_by(role='admin').count()
         total_recruiters = Users.query.filter_by(role='recruiter').count()
-        total_jobs_posted = Job.query.count() 
+        total_jobs_applied = db.session.query(db.func.count(JobApplication.id)).scalar()
 
         stats = {
             'total_jobs': total_jobs,
             'total_users': total_users,
             'total_admins': total_admins,
             'total_recruiters': total_recruiters,
-            'total_jobs_posted': total_jobs_posted
+            'total_jobs_applied': total_jobs_applied
         }
         return jsonify(stats)
     except Exception as e:

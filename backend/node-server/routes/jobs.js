@@ -1,9 +1,8 @@
 
 const express = require('express');
 const router = express.Router();
-const pool = require('../db'); // Adjust the path according to your project structure
-const sendEmail = require('../utils/email');
-
+const pool = require('../db'); 
+//candidate applying manually
 // Get jobs with optional filters
 router.get('/jobs', async (req, res) => {
   try {
@@ -55,7 +54,7 @@ router.post('/jobs/:jobId/apply', async (req, res) => {
   
       // Insert the job application with the retrieved resume ID
       const sql = 'INSERT INTO jobapplication (job_id, user_id, resume_id, status) VALUES (?, ?, ?, ?)';
-      const params = [jobId, userId, resumeId, 'Received'];
+      const params = [jobId, userId, resumeId, 'AppliedC'];
       
       await pool.promise().query(sql, params);
   

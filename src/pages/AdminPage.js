@@ -11,7 +11,7 @@ function AdminPage() {
     total_users: 0,
     total_admins: 0,
     total_recruiters: 0,
-    total_jobs_posted: 0
+    total_jobs_applied: 0
   });
 
   useEffect(() => {
@@ -55,8 +55,8 @@ function AdminPage() {
             <p>{stats.total_recruiters}</p>
           </div>
           <div className="stat">
-            <h3>Total Jobs Posted</h3>
-            <p>{stats.total_jobs_posted}</p>
+            <h3>Total Jobs Applied</h3>
+            <p>{stats.total_jobs_applied}</p>
           </div>
         
         </div>
