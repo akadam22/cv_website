@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import io from 'socket.io-client';
 import '../styles/AdminPage.css'; 
 import PieChart from '../components/PieChart';
 

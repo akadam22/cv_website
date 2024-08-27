@@ -83,7 +83,15 @@ console.log('Users Data:', users);
   console.log('User ID to Name Mapping:', userIdToName); // Debugging
 
   return (
-    <div className="job-management"><br></br><br></br><br></br>
+    <div className="job-management">
+      <div className="sidebar"><br></br><br></br><br></br><br></br>
+        <h2>Admin Dashboard</h2>
+        <ul>
+          <li><a href="/admin/users">Manage Users</a></li>
+          <li><a href="/admin/jobs">Manage Jobs</a></li>
+          <li><button className="logout-button" onClick={() => window.location.href = '/signin'}>Logout</button></li>
+        </ul>
+      </div>
       <h2>Job Management</h2>
       <table className="job-table">
         <thead>
@@ -94,7 +102,7 @@ console.log('Users Data:', users);
             <th>Location</th>
             <th>Salary</th>
             <th>Posted By</th>
-            <th>Actions</th>
+            {/* <th>Actions</th> */}
           </tr>
         </thead>
         <tbody>
@@ -106,10 +114,10 @@ console.log('Users Data:', users);
               <td>{job.location}</td>
               <td>{job.salary}</td>
               <td>{userIdToName[job.posted_by] || 'Unknown'}</td>
-              <td>
+              {/* <td>
                 <button onClick={() => { setSelectedJob(job); setFormData({ title: job.title, description: job.description, company: job.company, location: job.location, salary: job.salary }); setShowModal(true); }}>Update</button>
                 <button onClick={() => handleDeleteJob(job.id)}>Delete</button>
-              </td>
+              </td> */}
             </tr>
           ))}
         </tbody>

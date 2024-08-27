@@ -1,127 +1,131 @@
-/* RecruiterPage.css */
 
 .recruiter-page {
-    font-family: 'Arial', sans-serif;
-    padding: 20px;
-    min-height: 100vh;
-    display: flex;
-    background-color: #f0f0f0; /* Light gray background */
+  font-family: 'Arial', sans-serif;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  background-color: #f0f0f0; /* Light gray background */
+}
+
+.sidebar {
+  background: #ffffff; /* White background for sidebar */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for modern look */
+  width: 250px; /* Fixed width for sidebar */
+  margin-right: 20px; /* Space between sidebar and main content */
+}
+
+.main-content {
+  flex: 1; /* Allow main content to take up remaining space */
+  background-color: #ffffff; /* White background to match sidebar */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for modern look */
+}
+
+h1 {
+  font-size: 28px;
+  color: #333; /* Dark text color for visibility */
+}
+
+a {
+  color: blue; /* Ensure links are not hidden */
+  text-decoration: underline;
+}
+
+
+h2 {
+  font-size: 22px;
+  color: #333; /* Dark text color for better readability */
+  border-bottom: 2px solid #e9ecef; /* Underline for headings */
+  padding-bottom: 10px;
+  margin-bottom: 20px; /* Space below headings */
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+table, th, td {
+  border: 1px solid #dee2e6;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+}
+
+thead {
+  background-color: #f1f1f1; /* Light background for table header */
+}
+
+tbody tr:nth-child(even) {
+  background-color: #f9f9f9; /* Zebra stripes for table rows */
+}
+
+tbody tr:hover {
+  background-color: #f1f1f1; /* Highlight row on hover */
+}
+
+button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007bff; /* Blue background */
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+.schedule-interview {
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #e9ecef; /* Light gray background for the form */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for modern look */
+}
+
+.schedule-interview label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.schedule-interview input {
+  margin-top: 5px;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: 100%;
+}
+
+.schedule-interview button {
+  background-color: #28a745; /* Green background */
+}
+
+.schedule-interview button:hover {
+  background-color: #218838; /* Darker green on hover */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .recruiter-page {
+    flex-direction: column;
   }
-  
+
   .sidebar {
-    background: #ffffff; /* White background for sidebar */
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for modern look */
-    width: 250px; /* Fixed width for sidebar */
-    margin-right: 20px; /* Space between sidebar and main content */
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 20px; /* Space between sidebar and main content on mobile */
   }
-  
+
   .main-content {
-    flex: 1; /* Allow main content to take up remaining space */
-    background-color: #ffffff; /* White background to match sidebar */
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for modern look */
+    padding: 15px;
   }
-  
-  h1 {
-    font-size: 28px;
-    color: #333; /* Dark text color for visibility */
-  }
-  
-  h2 {
-    font-size: 22px;
-    color: #333; /* Dark text color for better readability */
-    border-bottom: 2px solid #e9ecef; /* Underline for headings */
-    padding-bottom: 10px;
-    margin-bottom: 20px; /* Space below headings */
-  }
-  
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
-  table, th, td {
-    border: 1px solid #dee2e6;
-  }
-  
-  th, td {
-    padding: 12px;
-    text-align: left;
-  }
-  
-  thead {
-    background-color: #f1f1f1; /* Light background for table header */
-  }
-  
-  tbody tr:nth-child(even) {
-    background-color: #f9f9f9; /* Zebra stripes for table rows */
-  }
-  
-  tbody tr:hover {
-    background-color: #f1f1f1; /* Highlight row on hover */
-  }
-  
-  button {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 5px;
-    background-color: #007bff; /* Blue background */
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.3s;
-  }
-  
-  button:hover {
-    background-color: #0056b3; /* Darker blue on hover */
-  }
-  
-  .schedule-interview {
-    margin-top: 20px;
-    padding: 20px;
-    background-color: #e9ecef; /* Light gray background for the form */
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for modern look */
-  }
-  
-  .schedule-interview label {
-    display: block;
-    margin-bottom: 10px;
-  }
-  
-  .schedule-interview input {
-    margin-top: 5px;
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    width: 100%;
-  }
-  
-  .schedule-interview button {
-    background-color: #28a745; /* Green background */
-  }
-  
-  .schedule-interview button:hover {
-    background-color: #218838; /* Darker green on hover */
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 768px) {
-    .recruiter-page {
-      flex-direction: column;
-    }
-  
-    .sidebar {
-      width: 100%;
-      margin-right: 0;
-      margin-bottom: 20px; /* Space between sidebar and main content on mobile */
-    }
-  
-    .main-content {
-      padding: 15px;
-    }
-  }
-  
+}

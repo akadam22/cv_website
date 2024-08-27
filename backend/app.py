@@ -1,6 +1,6 @@
 from email.mime.text import MIMEText
 import smtplib
-from flask import Flask, json, logging, request, jsonify
+from flask import Flask, json, Blueprint, logging, request, jsonify
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, create_refresh_token, get_jwt_identity
 import mysql.connector
@@ -10,9 +10,7 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 from flask_socketio import SocketIO
-import fitz  # PyMuPDF for PDF
 from docx import Document 
-import spacy
 
 # Load environment variables from .env
 load_dotenv()
@@ -432,6 +430,7 @@ def send_email():
 def handle_internal_error(error):
     app.logger.error(f"Internal Server Error: {error}")
     return jsonify({"error": "An internal error occurred. Please try again later."}), 500
+
 
 
 if __name__ == '__main__':

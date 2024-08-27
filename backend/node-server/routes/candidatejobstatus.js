@@ -1,26 +1,38 @@
-// Add this to your routes file or a new route file
 const express = require('express');
 const router = express.Router();
 const pool = require('../db'); // Adjust the path as necessary
 
-// Get job applications for a specific user
-router.get('/job-applications/:userId', async (req, res) => {
-  const userId = req.params.userId;
-  
-  try {
-    const [rows] = await pool.promise().query(`
-      SELECT job.title, job.company, jobapplication.status
-      FROM jobapplication
-      JOIN job ON jobapplication.job_id = job.id
-      WHERE jobapplication.user_id = ?
-    `, [userId]);
+// Update the status of a job application
+router.put('/job-applications/:applicationId/status', async (req, res) => {
+  const { applicationId } = req.params;
+  const { status } = req.body;
 
-    res.json(rows);
+  // Validate status (optional)
+  const validStatuses = ['Received', 'Under Review', 'Interview Scheduled', 'Rejected'];
+  if (!validStatuses.includes(status)) {
+    return res.status(400).json({ error: 'Invalid status value' });
+  }
+
+  try {
+    const [result] = await pool.promise().query(`
+      UPDATE jobapplication
+      SET status = ?
+      WHERE id = ?
+    `, [status, applicationId]);
+
+    if (result.affectedRows > 0) {
+      res.status(200).json({ message: 'Status updated successfully' });
+    } else {
+      res.status(404).json({ error: 'Job application not found' });
+    }
   } catch (error) {
-    console.error('Error fetching job applications:', error);
-    res.status(500).json({ error: 'An error occurred while fetching job applications.' });
+    console.error('Error updating job application status:', error);
+    res.status(500).json({ error: 'An error occurred while updating job application status.' });
   }
 });
+
+module.exports = router;
+
 
 // // Add an endpoint for fetching scheduled interviews
 // router.get('/api/scheduled-interviews/:userId', async (req, res) => {
@@ -40,5 +52,3 @@ router.get('/job-applications/:userId', async (req, res) => {
 //     res.status(500).json({ error: 'An error occurred while fetching scheduled interviews.' });
 //   }
 // });
-
-module.exports = router;

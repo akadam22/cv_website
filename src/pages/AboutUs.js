@@ -56,12 +56,13 @@ const AboutUs = () => {
         <p><strong>Tools and Technologies used to create this project:</strong></p>
         <ul>
           <li>React</li>
-          <li>Python</li>
+          <li>Python(Flask)</li>
           <li>HTML</li>
           <li>CSS</li>
           <li>Node.js</li>
           <li>MySQL</li>
-          <li>Next.js</li>
+          <li>Express.js</li>
+          <li>POSTMAN</li>
         </ul>
       </section>
 

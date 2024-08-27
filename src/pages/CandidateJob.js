@@ -40,19 +40,18 @@ function CandidateJob() {
       alert('You need to be logged in to apply for jobs.');
       return;
     }
-
+  
     try {
       await axios.post(`http://localhost:4000/api/jobs/${jobId}/apply`, {
-        userId,
-        resumeId: null,
-       
+        userId
       });
       alert('Application submitted successfully');
-      
     } catch (err) {
-      alert('Error applying for the job. Please Upload Your Resume.');
+      console.error('Error applying for the job:', err);
+      alert('Error applying for the job. Please check if you have uploaded your resume or if you have already applied for this job.');
     }
   };
+  
 
   return (
     <div className="job-search-page container">

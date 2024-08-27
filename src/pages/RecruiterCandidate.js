@@ -16,9 +16,10 @@ function RecruiterPage() {
         });
         console.log('Fetched Jobs:', response.data);
 
+        // Ensure candidates is an array
         const jobsWithCandidates = response.data.map(job => ({
           ...job,
-          candidates: job.candidates || [] // Default to an empty array if no candidates
+          candidates: job.candidates || []
         }));
 
         setJobs(jobsWithCandidates);
@@ -30,20 +31,18 @@ function RecruiterPage() {
     fetchJobs();
   }, []);
 
-  const handleStatusChange = async (jobId, candidateId, newStatus) => {
+  const handleStatusChange = async (applicationId, newStatus) => {
     try {
-      await axios.put(`http://localhost:4000/api/jobs/${jobId}/candidates/${candidateId}`, {
+      await axios.put(`http://localhost:4000/api/job-applications/${applicationId}/status`, {
         status: newStatus
       });
-      // Refresh job data or update local state
+      // Update local state
       const updatedJobs = jobs.map(job => {
-        if (job.id === jobId) {
-          job.candidates = job.candidates.map(candidate => 
-            candidate.candidate_id === candidateId
-              ? { ...candidate, status: newStatus }
-              : candidate
-          );
-        }
+        job.candidates = job.candidates.map(candidate => 
+          candidate.application_id === applicationId
+            ? { ...candidate, status: newStatus }
+            : candidate
+        );
         return job;
       });
       setJobs(updatedJobs);
@@ -73,66 +72,65 @@ function RecruiterPage() {
         <h1>Recruiter Dashboard</h1>
         <h2>Job Applications</h2>
         {jobs.length > 0 ? (
-  <table>
-    <thead>
-      <tr>
-        <th>Job Title</th>
-        <th>Company</th>
-        <th>Candidate Resume</th>
-        <th>Status</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      {jobs.map(job => (
-        job.candidates.length > 0 ? (
-          job.candidates.map(candidate => (
-            <tr key={candidate.application_id}>
-              <td>{job.title}</td>
-              <td>{job.company}</td>
-              <td>
-                {candidate.resume_url ? (
-                  <a href={candidate.resume_url} target="_blank" rel="noopener noreferrer">
-                    View Resume
-                  </a>
-                ) : (
-                  'No resume submitted'
-                )}
-              </td>
-              <td>
-                <select
-                  value={candidate.status}
-                  onChange={(e) => handleStatusChange(job.id, candidate.candidate_id, e.target.value)}
-                >
-                  <option value="Received">Received</option>
-                  <option value="Under Review">Under Review</option>
-                  <option value="Interview Scheduled">Interview Scheduled</option>
-                  <option value="Rejected">Rejected</option>
-                </select>
-              </td>
-              <td>
-                {/* Additional actions can be added here */}
-              </td>
-            </tr>
-          ))
-        ) : (
-          <tr key={job.id}>
+          <table>
+            <thead>
+              <tr>
+                <th>Job Title</th>
+                <th>Company</th>
+                <th>Candidate Resume</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+  {jobs.map(job => (
+    job.candidates.length > 0 ? (
+      job.candidates.map(candidate => {
+        console.log('Candidate Resume URL:', candidate.resume_url); // Debugging line
+        return (
+          <tr key={candidate.application_id}>
             <td>{job.title}</td>
             <td>{job.company}</td>
-            <td colSpan="3">No candidates have applied.</td>
+            <td>
+              {candidate.resume_url ? (
+                <a href={candidate.resume_url} target="_blank" rel="noopener noreferrer">
+                  View Resume
+                </a>
+              ) : (
+                'No resume submitted'
+              )}
+            </td>
+            <td>
+              <select
+                value={candidate.status || 'Received'}
+                onChange={(e) => handleStatusChange(candidate.application_id, e.target.value)}
+              >
+                <option value="Received">Received</option>
+                <option value="Under Review">Under Review</option>
+                <option value="Interview Scheduled">Interview Scheduled</option>
+                <option value="Offer Letter">Offer Letter</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </td>
           </tr>
-        )
-      ))}
-    </tbody>
-  </table>
-) : (
-  <p>No job applications found.</p>
-)}
+        );
+      })
+    ) : (
+      <tr key={job.id}>
+        <td>{job.title}</td>
+        <td>{job.company}</td>
+        <td colSpan="4">No candidates.</td> {/* Adjust colspan to match number of columns */}
+      </tr>
+    )
+  ))}
+</tbody>
 
+          </table>
+        ) : (
+          <p>No job applications found.</p>
+        )}
       </div>
     </div>
   );
-  
 }
 
 export default RecruiterPage;

@@ -1,14 +1,14 @@
-const path = require('path');
-const fs = require('fs');
+const path = require('path');//file handling
+const fs = require('fs'); //file handling
 const pool = require('../db'); // Database connection
-const express = require('express');
+const express = require('express'); //api routes
 const router = express.Router();
-const natural = require('natural');
-const WordNet = require('node-wordnet');
+const natural = require('natural');  //text processing, extracting words
+const WordNet = require('node-wordnet'); // finding synonyms
 const wordnet = new WordNet();
-const cron = require('node-cron');
-const axios = require('axios');
-const mammoth = require('mammoth');
+const cron = require('node-cron'); //scheduling the job applying tasks 10 secs interval
+const axios = require('axios'); // for external API requests
+const mammoth = require('mammoth'); //getting texts from resumes (.doc)files
 const tokenizer = new natural.WordTokenizer();
 const nodemailer = require('nodemailer'); //Email Notification
 const dotenv = require('dotenv');
@@ -95,11 +95,11 @@ const expandWithSynonyms = async (text) => {
     return expandedText;
 };
 
-// Before applying TF-IDF, expand the resume and job descriptions
-const parseResumeWithSynonyms = async (resumeText) => {
-    const expandedResume = await expandWithSynonyms(resumeText);
-    return await extractKeywordsAndSynonyms(expandedResume);
-};
+// // Before applying TF-IDF, expand the resume and job descriptions
+// const parseResumeWithSynonyms = async (resumeText) => {
+//     const expandedResume = await expandWithSynonyms(resumeText);
+//     return await extractKeywordsAndSynonyms(expandedResume);
+// };
 
 const cleanText = (text) => {
     return text
@@ -146,44 +146,6 @@ const parseJobDescription = async (description) => {
     return await extractKeywordsAndSynonyms(cleanedDescription);
 };
 
-// Example function to process and compare resumes to job posts
-const processAndCompare = async () => {
-    const candidates = await getCandidates();
-    const jobs = await getJobs();
-
-    for (const job of jobs) {
-        const jobText = await parseJobDescription(job.description);
-
-        for (const candidate of candidates) {
-            const resumeText = await getResumeContent(candidate.id);
-            const parsedResume = await parseResume(resumeText);
-
-            // Ensure parsedResume and jobText are valid
-            const resumeTerms = extractTerms(parsedResume);
-            const jobTerms = extractTerms(jobText);
-
-            // Log terms to debug
-            console.log('Resume Terms:', resumeTerms);
-            console.log('Job Terms:', jobTerms);
-
-            const similarityScore = calculateCosineSimilarity(resumeTerms, jobTerms);
-            console.log(`Similarity Score: ${similarityScore}`);
-
-            if (similarityScore >= SIMILARITY_THRESHOLD) {
-                console.log(`Candidate ${candidate.id} matches job ${job.id}`);
-                const resumeId = await getResumeIdForCandidate(candidate.id);
-                if (resumeId) {
-                    await applyForJob(candidate.id, job.id, resumeId);
-                    console.log(`Applied for job ${job.id} on behalf of candidate ${candidate.id}`);
-                }
-            } else {
-                console.log(`Candidate ${candidate.id} does not match job ${job.id}`);
-            }
-        }
-    }
-};
-
-processAndCompare();
 
 // ===================== Similarity Calculation =====================
 // Function to extract terms from text
@@ -192,7 +154,7 @@ const extractTerms = (text) => {
     return terms.filter(term => !['a', 'the', 'and', 'in', 'to', 'of', 'for', 'with', 'on', 'at', 'an'].includes(term) && term.length > 2);
 };
 
-// Function to calculate cosine similarity
+// Function to calculate cosine similarity where it compares the 2 keyword sets
 const calculateCosineSimilarity = (resumeTerms, jobTerms) => {
     if (!Array.isArray(resumeTerms) || !Array.isArray(jobTerms)) {
         throw new Error('Both resumeTerms and jobTerms should be arrays.');
@@ -279,7 +241,7 @@ const calculateSimilarity = (resumeContent, jobContent) => {
     return similarity || 0;
 };
 
-const SIMILARITY_THRESHOLD = 0.05; // or any value you deem appropriate
+const SIMILARITY_THRESHOLD = 0.05; //we can adjust it accordingly
 
 // Check if a candidate matches a job based on similarity score
 const matchCandidateToJob = async (candidate, job) => {
@@ -308,7 +270,7 @@ const applyForJob = async (userId, jobId, resumeId) => {
 
         await pool.promise().query(
             'INSERT INTO jobapplication (job_id, user_id, resume_id, status) VALUES (?, ?, ?, ?)',
-            [jobId, userId, resumeId, 'Applied']
+            [jobId, userId, resumeId, 'AppliedS']
         );
         console.log(`Applied for job ${jobId} on behalf of candidate ${userId}`);
         
@@ -317,23 +279,64 @@ const applyForJob = async (userId, jobId, resumeId) => {
         console.error(`Error applying for job ${jobId} on behalf of candidate ${userId}:`, error);
     }
 };
+
+// function to process and compare resumes to job posts
+const processAndCompare = async () => {
+    const candidates = await getCandidates();
+    const jobs = await getJobs();
+
+    for (const job of jobs) {
+        const jobText = await parseJobDescription(job.description);
+
+        for (const candidate of candidates) {
+            const resumeText = await getResumeContent(candidate.id);
+            const parsedResume = await parseResume(resumeText);
+
+            // Ensure parsedResume and jobText are valid
+            const resumeTerms = extractTerms(parsedResume);
+            const jobTerms = extractTerms(jobText);
+
+            // Log terms to debug
+            console.log('Resume Terms:', resumeTerms);
+            console.log('Job Terms:', jobTerms);
+
+            const similarityScore = calculateCosineSimilarity(resumeTerms, jobTerms);
+            console.log(`Similarity Score: ${similarityScore}`);
+
+            if (similarityScore >= SIMILARITY_THRESHOLD) {
+                console.log(`Candidate ${candidate.id} matches job ${job.id}`);
+                const resumeId = await getResumeIdForCandidate(candidate.id);
+                if (resumeId) {
+                    await applyForJob(candidate.id, job.id, resumeId);
+                    console.log(`Applied for job ${job.id} on behalf of candidate ${candidate.id}`);
+                }
+            } else {
+                console.log(`Candidate ${candidate.id} does not match job ${job.id}`);
+            }
+        }
+    }
+};
+
+processAndCompare();
+
 // Notify candidate via email
 const notifyCandidate = async (userId, jobId) => {
     try {
-        // Fetch candidate's email from 'users' table
-        const [[candidate]] = await pool.promise().query('SELECT email FROM users WHERE id = ?', [userId]);
+        // Fetch candidate's details including email and name
+        const [[candidate]] = await pool.promise().query('SELECT email, name FROM users WHERE id = ?', [userId]);
         
         // Fetch job details from 'job' table
         const [[job]] = await pool.promise().query('SELECT title, description, salary, location FROM job WHERE id = ?', [jobId]);
 
         // Ensure both candidate and job exist before sending the email
         if (candidate && job) {
-            await sendEmail(candidate.email, job); // Send email to the candidate
+            await sendEmail(candidate, job); // Send email to the candidate
         }
     } catch (error) {
         console.error(`Error notifying candidate ${userId} about job ${jobId}:`, error);
     }
 };
+
 
 // Create a transporter object using SMTP transport
 const transporter = nodemailer.createTransport({
@@ -341,8 +344,8 @@ const transporter = nodemailer.createTransport({
     port: 465,              // Use port 465 for secure connection
     secure: true,           // Use SSL
     auth: {
-        user: process.env.EMAIL_USERNAME || 'eddiewithme31@gmail.com', // Replace with actual email for testing
-        pass: process.env.EMAIL_PASSWORD || 'vymn swuq pdub ajta'   // Replace with actual password/app password for testing
+        user: process.env.EMAIL_USERNAME || 'eddiewithme31@gmail.com', // actual email
+        pass: process.env.EMAIL_PASSWORD || 'vymn swuq pdub ajta'   //actual password
     }
 });
 
@@ -358,21 +361,31 @@ transporter.verify((error, success) => {
 });
 
 // Send email notification
-const sendEmail = async (candidateEmail, jobDetails) => {
+
+const sendEmail = async (candidate, jobDetails) => {
     const mailOptions = {
         from: process.env.EMAIL_USERNAME,  // Sender email address
-        to: candidateEmail,                // Candidate's email address
+        to: candidate.email,               // Candidate's email address
         subject: `Job Application for ${jobDetails.title}`, // Subject line
-        text: `We have automatically applied you for the following job:\n\nTitle: ${jobDetails.title}\nDescription: ${jobDetails.description}\nSalary: ${jobDetails.salary}\nLocation: ${jobDetails.location}. \nSomeone from the HR or Recruiter's will reach out to you soon for further status.`
+        text: `Hello ${candidate.name},\n\n` +
+              `We have automatically applied you for the following job:\n\n` +
+              `Title: ${jobDetails.title}\n` +
+              `Description: ${jobDetails.description}\n` +
+              `Salary: ${jobDetails.salary}\n` +
+              `Location: ${jobDetails.location}\n\n` +
+              `Someone from the HR or Recruiter's team will reach out to you soon for further status.\n\n` +
+              `Best regards,\n` +
+              `Your Company`
     };
 
     try {
         await transporter.sendMail(mailOptions);
-        console.log(`Email sent to ${candidateEmail} for job ${jobDetails.title}`);
+        console.log(`Email sent to ${candidate.email} for job ${jobDetails.title}`);
     } catch (error) {
-        console.error(`Error sending email to ${candidateEmail}:`, error);
+        console.error(`Error sending email to ${candidate.email}:`, error);
     }
 };
+
 
 
 // Batch process candidates for a job
@@ -515,7 +528,7 @@ cron.schedule('*/10 * * * * *', async () => {
     }
 });
 
-// Helper function to get synonyms using Datamuse API
+//function to get synonyms using Datamuse API
 const getSynonyms = async (word) => {
     try {
         const response = await axios.get(`https://api.datamuse.com/words?rel_syn=${word}`);

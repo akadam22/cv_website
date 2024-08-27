@@ -16,14 +16,14 @@
 }
 
 /* Links Container */
-.links {
+.leftSide {
   display: flex;
   align-items: center;
   gap: 20px;
 }
 
 /* Links Style */
-.links a, .links .logout-button {
+.leftSide a, .leftSide .logout-button {
   color: #ecf0f1;
   text-decoration: none;
   font-size: 18px;
@@ -33,7 +33,7 @@
 }
 
 /* Hover Effects */
-.links a:hover, .links .logout-button:hover {
+.leftSide a:hover, .leftSide .logout-button:hover {
   background-color: #34495e;
 }
 
@@ -53,7 +53,7 @@
 }
 
 /* Toggle Button for Mobile */
-.toggle-button {
+.rightSide button {
   display: none; /* Hidden by default */
   background: none;
   border: none;
@@ -64,7 +64,7 @@
 }
 
 /* Mobile Menu */
-.mobile-menu {
+.leftSide {
   display: none; /* Hidden by default */
   flex-direction: column;
   width: 100%;
@@ -76,11 +76,11 @@
   z-index: 1000;
 }
 
-.mobile-menu.show {
+.leftSide.open {
   display: flex; /* Show menu when toggled */
 }
 
-.mobile-menu a, .mobile-menu .logout-button {
+.leftSide a, .leftSide .logout-button {
   color: #ecf0f1;
   text-decoration: none;
   font-size: 18px;
@@ -91,18 +91,22 @@
 
 /* Hide mobile menu links in larger screens */
 @media (min-width: 769px) {
-  .mobile-menu {
-    display: none;
+  .leftSide {
+    display: flex; /* Show on desktop */
   }
 
-  .toggle-button {
-    display: none;
+  .rightSide button {
+    display: none; /* Hide toggle button on desktop */
   }
 }
 
 /* Show toggle button for mobile screens */
 @media (max-width: 768px) {
-  .toggle-button {
-    display: block;
+  .leftSide {
+    display: none; /* Hidden by default on mobile */
+  }
+
+  .rightSide button {
+    display: block; /* Show toggle button on mobile */
   }
 }

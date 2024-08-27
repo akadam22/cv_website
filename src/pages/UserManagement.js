@@ -94,6 +94,14 @@ function UserManagement() {
 
   return (
     <div className="user-management">
+      <div className="sidebar"><br></br><br></br><br></br><br></br>
+        <h2>Admin Dashboard</h2>
+        <ul>
+          <li><a href="/admin/users">Manage Users</a></li>
+          <li><a href="/admin/jobs">Manage Jobs</a></li>
+          <li><button className="logout-button" onClick={() => window.location.href = '/signin'}>Logout</button></li>
+        </ul>
+      </div>
       <br></br><br></br><br></br><br></br>
       <h2>User Management</h2>
       <table className="user-table">

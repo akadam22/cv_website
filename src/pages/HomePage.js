@@ -60,7 +60,7 @@ function HomePage() {
     if (feature === 'Feature 2' && !window.Tawk_API) {
       // Dynamically load the Tawk.to script
       const script = document.createElement('script');
-      script.src = 'https://tawk.to/chat/66b3912332dca6db2cbb076d/1i4mmtta1'; // Replace with your actual Tawk.to widget ID
+      script.src = 'https://tawk.to/chat/66b3912332dca6db2cbb076d/1i4mmtta1'; //  actual Tawk.to widget ID
       script.async = true;
       document.body.appendChild(script);
     }

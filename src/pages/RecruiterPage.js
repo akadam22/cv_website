@@ -11,16 +11,15 @@ function RecruiterPage() {
     candidates_per_company: [],
   });
 
-  useEffect(() => {
-    axios.get('http://localhost:5000/api/recruiter-stats')
-      .then(response => {
-        setStats(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching stats:', error);
-      });
-  }, []);
+  axios.get('http://localhost:5000/api/recruiter-stats')
+  .then(response => {
+    console.log('Fetched stats:', response.data);
+  })
+  .catch(error => {
+    console.error('Error fetching stats:', error);
+  });
 
+  
   return (
     <div className="recruiter-page">
       <div className="sidebar">
