@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Sidebar from '../components/Sidebar'; // Assuming you have a Sidebar component
 import '../styles/CandidateSkills.css'; // Reusing the same CSS file
-
+//manages skills for candidate page.
 const CandidateSkills = () => {
   const [formData, setFormData] = useState({
     skill_name: '',

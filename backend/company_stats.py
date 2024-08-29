@@ -1,7 +1,10 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS  # Import the CORS module
 
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
+
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://username:password@localhost/cv_website'
 db = SQLAlchemy(app)
 
@@ -20,79 +23,6 @@ class JobApplication(db.Model):
 
 @app.route('/api/recruiter-stats', methods=['GET'])
 def get_recruiter_stats():
-    try:
-        # Count the number of unique companies
-        total_companies = db.session.query(Job.company.distinct()).count()
-
-        # Get the count of jobs posted per company
-        jobs_per_company = db.session.query(
-            Job.company, db.func.count(Job.id).label('jobs_posted')
-        ).group_by(Job.company).all()
-
-        # Get the count of candidates applied per company
-        candidates_per_company = db.session.query(
-            Job.company, db.func.count(JobApplication.id).label('candidates_applied')
-        ).join(Job).group_by(Job.company).all()
-
-        # Convert results to dictionary format
-        jobs_dict = {company: jobs_posted for company, jobs_posted in jobs_per_company}
-        candidates_dict = {company: candidates_applied for company, candidates_applied in candidates_per_company}
-
-        # Ensure all companies are accounted for in candidates stats
-        for company in jobs_dict.keys():
-            if company not in candidates_dict:
-                candidates_dict[company] = 0
-
-        # Prepare data for frontend
-        stats = {
-            'total_companies': total_companies,
-            'jobs_per_company': [{'company': company, 'jobs_posted': jobs_posted} for company, jobs_posted in jobs_per_company],
-            'candidates_per_company': [{'company': company, 'candidates_applied': candidates_dict.get(company, 0)} for company in jobs_dict.keys()]
-        }
-
-        return jsonify(stats)
-    except Exception as e:
-        app.logger.error(f"Error fetching recruiter stats: {str(e)}")
-        return jsonify({'error': str(e)}), 500
-
-    try:
-        # Count the number of unique companies
-        total_companies = db.session.query(Job.company.distinct()).count()
-        print(f"Total Companies: {total_companies}")
-
-        # Get the count of jobs posted per company
-        jobs_per_company = db.session.query(
-            Job.company, db.func.count(Job.id).label('jobs_posted')
-        ).group_by(Job.company).all()
-        print(f"Jobs per Company: {jobs_per_company}")
-
-        # Get the count of candidates applied per company
-        candidates_per_company = db.session.query(
-            Job.company, db.func.count(JobApplication.id).label('candidates_applied')
-        ).join(Job).group_by(Job.company).all()
-        print(f"Candidates per Company: {candidates_per_company}")
-
-        # Convert results to dictionary format
-        jobs_dict = {company: jobs_posted for company, jobs_posted in jobs_per_company}
-        candidates_dict = {company: candidates_applied for company, candidates_applied in candidates_per_company}
-
-        # Ensure all companies are accounted for in candidates stats
-        for company in jobs_dict.keys():
-            if company not in candidates_dict:
-                candidates_dict[company] = 0
-
-        # Prepare data for frontend
-        stats = {
-            'total_companies': total_companies,
-            'jobs_per_company': [{'company': company, 'jobs_posted': jobs_posted} for company, jobs_posted in jobs_per_company],
-            'candidates_per_company': [{'company': company, 'candidates_applied': candidates_dict.get(company, 0)} for company in jobs_dict.keys()]
-        }
-
-        return jsonify(stats)
-    except Exception as e:
-        app.logger.error(f"Error fetching recruiter stats: {str(e)}")
-        return jsonify({'error': str(e)}), 500
-
     try:
         # Count the number of unique companies
         total_companies = db.session.query(Job.company.distinct()).count()

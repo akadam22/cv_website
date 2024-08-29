@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/CandidateProfile.css';
 import Sidebar from '../components/Sidebar';
-
+//manages profile for candidate page.
 function CandidateProfile() {
   const [personalInfo, setPersonalInfo] = useState({
     name: '',

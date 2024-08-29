@@ -26,7 +26,7 @@ function SignInModal() {
         localStorage.setItem('userId', userId); // Use userId from response
         localStorage.setItem('jwtToken', access_token); // Assuming jwtToken is the access token
 
-        alert('Login successful');
+       
 
         // Redirect based on user role
         switch (role) {

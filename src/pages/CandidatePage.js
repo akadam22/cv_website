@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/CandidatePage.css';
 import Sidebar from '../components/Sidebar';
-
+//shows jobs applied and interview schedules on candidate dashboard page
 function CandidatePage() {
   const [username, setUsername] = useState('');
   const [applications, setApplications] = useState([]);

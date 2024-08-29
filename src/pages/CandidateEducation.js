@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/CandidateExperience.css';
 import Sidebar from '../components/Sidebar';
-
+//manages education for candidate page.
 const CandidateEducation = () => {
   const [education, setEducation] = useState({
     institution: '',

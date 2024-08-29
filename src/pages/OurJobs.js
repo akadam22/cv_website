@@ -1,6 +1,6 @@
 import React from 'react';
 import '../styles/OurJobs.css';
-import Logo1 from '../assets/company-logo1.png'; // Import your images
+import Logo1 from '../assets/company-logo1.png'; 
 import Logo2 from '../assets/company-logo2.png';
 import Logo3 from '../assets/company-logo4.png';
 
@@ -9,19 +9,19 @@ const jobs = [
     title: 'Front-End Developer',
     location: 'New York, NY',
     description: 'Build and maintain the front-end of our web applications.',
-    image: Logo1 // Use the imported image
+    image: Logo1 
   },
   {
     title: 'Back-End Developer',
     location: 'San Francisco, CA',
     description: 'Develop and maintain server-side applications and APIs.',
-    image: Logo2 // Use the imported image
+    image: Logo2 
   },
   {
     title: 'UI/UX Designer',
     location: 'Remote',
     description: 'Design user interfaces and user experiences for our products.',
-    image: Logo3 // Use the imported image
+    image: Logo3 
   },
 ];
 

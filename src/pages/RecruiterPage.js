@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/RecruiterPage.css';
 import { Link } from 'react-router-dom';
-import BarChartComponent from '../components/BarChartComponent'; // Make sure this matches your actual component name
+import BarChartComponent from '../components/BarChartComponent'; // Adjust the import based on your file structure
 
 function RecruiterPage() {
   const [stats, setStats] = useState({
@@ -11,15 +11,31 @@ function RecruiterPage() {
     candidates_per_company: [],
   });
 
-  axios.get('http://localhost:5000/api/recruiter-stats')
-  .then(response => {
-    console.log('Fetched stats:', response.data);
-  })
-  .catch(error => {
-    console.error('Error fetching stats:', error);
-  });
+  // Fetch the stats when the component mounts
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/recruiter-stats', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('jwtToken')}`,
+            'Content-Type': 'application/json',
+          },
+          withCredentials: true, 
+        });
+    
+        console.log('Fetched stats:', response.data);
+    
+        // Update the stats state with the fetched data
+        setStats(response.data);
+      } catch (error) {
+        console.error('Error fetching stats:', error);
+      }
+    };
+    
 
-  
+    fetchStats();
+  }, []);
+
   return (
     <div className="recruiter-page">
       <div className="sidebar">

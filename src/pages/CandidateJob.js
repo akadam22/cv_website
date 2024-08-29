@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/CandidateJob.css'; // Add your styles here
 import Sidebar from '../components/Sidebar';
-
+//fetches jobs and allows the candidate to manually apply job and do search functionality
 function CandidateJob() {
   const [jobs, setJobs] = useState([]);
   const [filters, setFilters] = useState({ title: '', location: '', company: '' });

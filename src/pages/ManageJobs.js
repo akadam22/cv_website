@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/ManageJobs.css';
-
+//manages jobs on admin dashboard
 function ManageJobs() {
   const [jobs, setJobs] = useState([]);
   const [users, setUsers] = useState([]);

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/CandidateResume.css';
 import Sidebar from '../components/Sidebar';
-
+//manages resume upload for candidate page.
 function CandidateResume() {
   const [resume, setResume] = useState(null);
   const [uploadStatus, setUploadStatus] = useState('');

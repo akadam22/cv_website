@@ -3,8 +3,8 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'rec
 
 const BarChartComponent = ({ data }) => {
   // Ensure data is properly formatted
-  const jobsData = data['jobs_per_company'] || [];
-  const candidatesData = data['candidates_per_company'] || [];
+  const jobsData = data.jobs_per_company || [];
+  const candidatesData = data.candidates_per_company || [];
 
   return (
     <div>

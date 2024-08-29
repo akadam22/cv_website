@@ -3,7 +3,7 @@ import axios from 'axios';
 import '../styles/CandidateExperience.css'; // Create and style this as needed
 import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer'; // Import Footer component
-
+//manages experience for candidate page.
 function CandidateExperience() {
   const [experience, setExperience] = useState({
     job_title: '',

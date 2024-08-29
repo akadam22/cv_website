@@ -12,7 +12,6 @@ function RegisterForm() {
     email: '',
     password: '',
     role: 'recruiter', // Default role
-    profilePicture: '', // Optional, if you want to handle file uploads
   });
   const navigate = useNavigate();
 

@@ -16,7 +16,7 @@ function RecruiterPage() {
         });
         console.log('Fetched Jobs:', response.data);
 
-        // Ensure candidates is an array
+        // Ensure candidates are set even if the response doesn't have any
         const jobsWithCandidates = response.data.map(job => ({
           ...job,
           candidates: job.candidates || []
@@ -36,7 +36,7 @@ function RecruiterPage() {
       await axios.put(`http://localhost:4000/api/job-applications/${applicationId}/status`, {
         status: newStatus
       });
-      // Update local state
+      // Update local state to reflect status change
       const updatedJobs = jobs.map(job => {
         job.candidates = job.candidates.map(candidate => 
           candidate.application_id === applicationId
@@ -82,48 +82,44 @@ function RecruiterPage() {
               </tr>
             </thead>
             <tbody>
-  {jobs.map(job => (
-    job.candidates.length > 0 ? (
-      job.candidates.map(candidate => {
-        console.log('Candidate Resume URL:', candidate.resume_url); // Debugging line
-        return (
-          <tr key={candidate.application_id}>
-            <td>{job.title}</td>
-            <td>{job.company}</td>
-            <td>
-              {candidate.resume_url ? (
-                <a href={candidate.resume_url} target="_blank" rel="noopener noreferrer">
-                  View Resume
-                </a>
-              ) : (
-                'No resume submitted'
-              )}
-            </td>
-            <td>
-              <select
-                value={candidate.status || 'Received'}
-                onChange={(e) => handleStatusChange(candidate.application_id, e.target.value)}
-              >
-                <option value="Received">Received</option>
-                <option value="Under Review">Under Review</option>
-                <option value="Interview Scheduled">Interview Scheduled</option>
-                <option value="Offer Letter">Offer Letter</option>
-                <option value="Rejected">Rejected</option>
-              </select>
-            </td>
-          </tr>
-        );
-      })
-    ) : (
-      <tr key={job.id}>
-        <td>{job.title}</td>
-        <td>{job.company}</td>
-        <td colSpan="4">No candidates.</td> {/* Adjust colspan to match number of columns */}
-      </tr>
-    )
-  ))}
-</tbody>
-
+              {jobs.map(job => (
+                job.candidates.length > 0 ? (
+                  job.candidates.map(candidate => (
+                    <tr key={candidate.application_id}>
+                      <td>{job.job_title}</td>
+                      <td>{job.company_name}</td>
+                      <td>
+                        {candidate.resume_url ? (
+                          <a href={candidate.resume_url} target="_blank" rel="noopener noreferrer">
+                            View Resume
+                          </a>
+                        ) : (
+                          'No resume submitted'
+                        )}
+                      </td>
+                      <td>
+                        <select
+                          value={candidate.status || 'Received'}
+                          onChange={(e) => handleStatusChange(candidate.application_id, e.target.value)}
+                        >
+                          <option value="Received">Received</option>
+                          <option value="Under Review">Under Review</option>
+                          <option value="Interview Scheduled">Interview Scheduled</option>
+                          <option value="Offer Letter">Offer Letter</option>
+                          <option value="Rejected">Rejected</option>
+                        </select>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr key={job.job_id}>
+                    <td>{job.title}</td>
+                    <td>{job.company}</td>
+                    <td colSpan="2">No candidates.</td> {/* Adjust colspan to match number of columns */}
+                  </tr>
+                )
+              ))}
+            </tbody>
           </table>
         ) : (
           <p>No job applications found.</p>
