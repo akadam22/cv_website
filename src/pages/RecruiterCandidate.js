@@ -4,31 +4,24 @@ import '../styles/RecruiterPage.css';
 import { Link } from 'react-router-dom';
 
 function RecruiterPage() {
-  const [jobs, setJobs] = useState([]);
+  const [jobApplications, setJobApplications] = useState([]);
 
   useEffect(() => {
-    const fetchJobs = async () => {
+    const fetchJobApplications = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/api/jobs', {
+        const response = await axios.get('http://localhost:4000/api/job-applications', {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
           }
         });
-        console.log('Fetched Jobs:', response.data);
-
-        // Ensure candidates are set even if the response doesn't have any
-        const jobsWithCandidates = response.data.map(job => ({
-          ...job,
-          candidates: job.candidates || []
-        }));
-
-        setJobs(jobsWithCandidates);
+        console.log('Fetched Job Applications:', response.data);
+        setJobApplications(response.data);
       } catch (error) {
-        console.error('Error fetching jobs:', error);
+        console.error('Error fetching job applications:', error);
       }
     };
 
-    fetchJobs();
+    fetchJobApplications();
   }, []);
 
   const handleStatusChange = async (applicationId, newStatus) => {
@@ -37,15 +30,12 @@ function RecruiterPage() {
         status: newStatus
       });
       // Update local state to reflect status change
-      const updatedJobs = jobs.map(job => {
-        job.candidates = job.candidates.map(candidate => 
-          candidate.application_id === applicationId
-            ? { ...candidate, status: newStatus }
-            : candidate
-        );
-        return job;
-      });
-      setJobs(updatedJobs);
+      const updatedApplications = jobApplications.map(application =>
+        application.application_id === applicationId
+          ? { ...application, status: newStatus }
+          : application
+      );
+      setJobApplications(updatedApplications);
     } catch (error) {
       console.error('Error updating status:', error);
     }
@@ -62,6 +52,7 @@ function RecruiterPage() {
           <li><Link to="/recruiter">Home</Link></li>
           <li><Link to="/recruiter/jobs">Jobs</Link></li>
           <li><Link to="/recruiter/candidates">Candidates</Link></li>
+          <li><Link to="/recruiter/interview">Schedule Interview</Link></li>
           <li><button className="logout-button" onClick={() => window.location.href = '/signin'}>Logout</button></li>
         </ul>
       </div>
@@ -71,7 +62,7 @@ function RecruiterPage() {
         <br />
         <h1>Recruiter Dashboard</h1>
         <h2>Job Applications</h2>
-        {jobs.length > 0 ? (
+        {jobApplications.length > 0 ? (
           <table>
             <thead>
               <tr>
@@ -82,42 +73,32 @@ function RecruiterPage() {
               </tr>
             </thead>
             <tbody>
-              {jobs.map(job => (
-                job.candidates.length > 0 ? (
-                  job.candidates.map(candidate => (
-                    <tr key={candidate.application_id}>
-                      <td>{job.job_title}</td>
-                      <td>{job.company_name}</td>
-                      <td>
-                        {candidate.resume_url ? (
-                          <a href={candidate.resume_url} target="_blank" rel="noopener noreferrer">
-                            View Resume
-                          </a>
-                        ) : (
-                          'No resume submitted'
-                        )}
-                      </td>
-                      <td>
-                        <select
-                          value={candidate.status || 'Received'}
-                          onChange={(e) => handleStatusChange(candidate.application_id, e.target.value)}
-                        >
-                          <option value="Received">Received</option>
-                          <option value="Under Review">Under Review</option>
-                          <option value="Interview Scheduled">Interview Scheduled</option>
-                          <option value="Offer Letter">Offer Letter</option>
-                          <option value="Rejected">Rejected</option>
-                        </select>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr key={job.job_id}>
-                    <td>{job.title}</td>
-                    <td>{job.company}</td>
-                    <td colSpan="2">No candidates.</td> {/* Adjust colspan to match number of columns */}
-                  </tr>
-                )
+              {jobApplications.map(application => (
+                <tr key={application.application_id}>
+                  <td>{application.job_title}</td>
+                  <td>{application.company_name}</td>
+                  <td>
+                    {application.resume_url ? (
+                      <a href={application.resume_url} target="_blank" rel="noopener noreferrer">
+                        View Resume
+                      </a>
+                    ) : (
+                      'No resume submitted'
+                    )}
+                  </td>
+                  <td>
+                    <select
+                      value={application.status || 'Received'}
+                      onChange={(e) => handleStatusChange(application.application_id, e.target.value)}
+                    >
+                      <option value="Received">Received</option>
+                      <option value="Under Review">Under Review</option>
+                      <option value="Interview Scheduled">Interview Scheduled</option>
+                      <option value="Offer Letter">Offer Letter</option>
+                      <option value="Rejected">Rejected</option>
+                    </select>
+                  </td>
+                </tr>
               ))}
             </tbody>
           </table>

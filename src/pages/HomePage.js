@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import HomeImage from '../assets/image1.png';
 import CompanyLogo1 from '../assets/company-logo1.png';
 import CompanyLogo2 from '../assets/company-logo2.png';
@@ -16,6 +15,7 @@ import '../styles/HomePage.css';
 function HomePage() {
   const [showModal, setShowModal] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState(null);
+  const [tawkLoaded, setTawkLoaded] = useState(false);
 
   const companies = [
     { name: 'Amazon', logo: CompanyLogo1 },
@@ -54,15 +54,27 @@ function HomePage() {
   };
 
   const toggleModal = (feature) => {
-    setSelectedFeature(feature);
-    setShowModal(!showModal);
-
-    if (feature === 'Feature 2' && !window.Tawk_API) {
-      // Dynamically load the Tawk.to script
-      const script = document.createElement('script');
-      script.src = 'https://tawk.to/chat/66b3912332dca6db2cbb076d/1i4mmtta1'; //  actual Tawk.to widget ID
-      script.async = true;
-      document.body.appendChild(script);
+    if (feature === 'Feature 2') {
+      if (!tawkLoaded) {
+        // Dynamically load the Tawk.to script
+        const script = document.createElement('script');
+        script.src = 'https://embed.tawk.to/66b3912332dca6db2cbb076d/1i4mmtta1'; // Replace with actual Tawk.to widget ID
+        script.async = true;
+        script.onload = () => {
+          setTawkLoaded(true);
+          window.Tawk_API = window.Tawk_API || {};
+          window.Tawk_LoadStart = new Date();
+          window.Tawk_API.onLoad = function () {
+            window.Tawk_API.maximize(); // Open the chat window
+          };
+        };
+        document.body.appendChild(script);
+      } else if (window.Tawk_API) {
+        window.Tawk_API.maximize(); // Open the chat window
+      }
+    } else {
+      setSelectedFeature(feature);
+      setShowModal(!showModal);
     }
   };
 

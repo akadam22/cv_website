@@ -4,54 +4,74 @@ const multer = require('multer');
 const path = require('path');
 const mysql = require('mysql2');
 const jwt = require('jsonwebtoken');
-const cors = require('cors'); // Make sure to use CORS
+const cors = require('cors');
 const port = 4000;
 const app = express();
 const jobRoutes = require('./routes/jobs'); // Import job routes
 const pool = require('./db');
-const StatusRoute = require('./routes/candidatejobstatus')
-const RecJobApplication = require('./routes/recruiterjobapplications')
-const jobMatching = require('./routes/jobmatching')
+const StatusRoute = require('./routes/candidatejobstatus');
+const RecJobApplication = require('./routes/recruiterjobapplications');
+const jobMatching = require('./routes/jobmatching');
+const scheduleInterview = require('./routes/candidatescheduleinterview');
+
+const corsOptions = {
+  origin: 'http://localhost:3000', // Your frontend URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+};
+
+
+// Initialize MySQL connection
+const connection = mysql.createConnection({
+  host: '127.0.0.1',
+  user: 'root',
+  password: '',
+  database: 'cv_website',
+});
+
+// Connect to the database
+connection.connect((err) => {
+  if (err) {
+    console.error('Error connecting to the database:', err);
+    process.exit(1);
+  }
+  console.log('Connected to the database');
+});
 
 
 // Middleware
-app.use(cors()); // Enable CORS
-app.use(express.json()); // For parsing application/json
-app.use(express.urlencoded({ extended: true })); // For parsing application/x-www-form-urlencoded
-// Serve static files from the 'uploads' directory
+app.use(cors());
+app.use(cors(corsOptions));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
 
 // Configure multer storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/'); // Directory where files will be saved
+    cb(null, 'uploads/');
   },
   filename: async (req, file, cb) => {
     try {
       const userId = req.params.userId;
-      
-      // Fetch the username from the database
       const [userRows] = await pool.promise().query('SELECT name FROM users WHERE id = ?', [userId]);
 
       if (userRows.length === 0) {
-        return cb(new Error('User not found'), false); // Return error if user is not found
+        return cb(new Error('User not found'), false);
       }
 
-      const name = userRows[0].name; // Use 'username' instead of 'name'
-
-      // Format the file name with the username
+      const name = userRows[0].name;
       const extension = path.extname(file.originalname);
-      const newFilename = `${name}_Resume${extension}`; // Use 'username' to create the file name
+      const newFilename = `${name}_Resume${extension}`;
 
-      cb(null, newFilename); // Save the file with the new filename
+      cb(null, newFilename);
     } catch (error) {
       console.error('Error fetching username:', error);
-      cb(error, false); // Handle any errors that occur while fetching the username
+      cb(error, false);
     }
   }
 });
-
 
 const upload = multer({ storage });
 
@@ -68,15 +88,13 @@ function authenticateJWT(req, res, next) {
   });
 }
 
-
 // Endpoint to upload or update resume
 app.post('/api/upload-resume/:userId', upload.single('resume'), async (req, res) => {
   const userId = req.params.userId;
-  const filePath = req.file.path.replace(/\\/g, '/'); // Normalize the path
+  const filePath = req.file.path.replace(/\\/g, '/');
   const uploadedAt = new Date();
 
   try {
-    // Ensure that userId is valid and exists in the database if necessary
     const [userRows] = await pool.promise().query('SELECT id FROM users WHERE id = ?', [userId]);
 
     if (userRows.length === 0) {
@@ -97,7 +115,6 @@ app.post('/api/upload-resume/:userId', upload.single('resume'), async (req, res)
     res.status(500).json({ error: 'Database error' });
   }
 });
-
 
 // Endpoint to upload work experience
 app.post('/api/upload-experience/:userId', (req, res) => {
@@ -180,7 +197,7 @@ app.get('/api/profile/:user_id', authenticateJWT, (req, res) => {
     return res.status(403).json({ error: 'Unauthorized access' });
   }
 
-  connection.query('SELECT name, contact, location, email FROM users WHERE id = ?', [user_id], (error, results) => {
+  pool.query('SELECT name, contact, location, email FROM users WHERE id = ?', [user_id], (error, results) => {
     if (error) {
       console.error('Database error:', error);
       return res.status(500).json({ error: 'Database error' });
@@ -198,7 +215,7 @@ app.get('/api/profile/:user_id', authenticateJWT, (req, res) => {
 app.get('/api/education/:userId', authenticateJWT, (req, res) => {
   const userId = req.params.userId;
 
-  connection.query('SELECT * FROM education WHERE user_id = ?', [userId], (error, results) => {
+  pool.query('SELECT * FROM education WHERE user_id = ?', [userId], (error, results) => {
     if (error) {
       return res.status(500).json({ error: error.message });
     }
@@ -206,11 +223,12 @@ app.get('/api/education/:userId', authenticateJWT, (req, res) => {
   });
 });
 
+// Use routes
 app.use('/api', jobRoutes);
 app.use('/api', StatusRoute);
-app.use('./api', RecJobApplication);
+app.use('/api', RecJobApplication);
 app.use('/api', jobMatching);
-
+app.use('/api', scheduleInterview);
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

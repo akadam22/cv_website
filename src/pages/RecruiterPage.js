@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../styles/RecruiterPage.css';
 import { Link } from 'react-router-dom';
 import BarChartComponent from '../components/BarChartComponent'; // Adjust the import based on your file structure
+import '../styles/RecruiterPage.css';
 
 function RecruiterPage() {
   const [stats, setStats] = useState({
@@ -47,6 +47,7 @@ function RecruiterPage() {
           <li><Link to="/recruiter">Home</Link></li>
           <li><Link to="/recruiter/jobs">Jobs</Link></li>
           <li><Link to="/recruiter/candidates">Candidates</Link></li>
+          <li><Link to="/recruiter/interview">Schedule Interview</Link></li>
           <li><button className="logout-button" onClick={() => window.location.href = '/signin'}>Logout</button></li>
         </ul>
       </div>
