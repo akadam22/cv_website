@@ -79,7 +79,7 @@ function RecruiterPage() {
                   <td>{application.company_name}</td>
                   <td>
                     {application.resume_url ? (
-                      <a href={application.resume_url} target="_blank" rel="noopener noreferrer">
+                      <a href={`http://localhost:4000/${application.resume_url}`} target="_blank" rel="noopener noreferrer">
                         View Resume
                       </a>
                     ) : (
@@ -111,3 +111,4 @@ function RecruiterPage() {
 }
 
 export default RecruiterPage;
+  
