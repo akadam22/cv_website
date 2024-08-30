@@ -13,6 +13,8 @@ const StatusRoute = require('./routes/candidatejobstatus');
 const RecJobApplication = require('./routes/recruiterjobapplications');
 const jobMatching = require('./routes/jobmatching');
 const scheduleInterview = require('./routes/candidatescheduleinterview');
+const recruiterFeedback = require('./routes/recruiterfeedback');
+
 
 const corsOptions = {
   origin: 'http://localhost:3000', // Your frontend URL
@@ -41,7 +43,7 @@ connection.connect((err) => {
 
 
 // Middleware
-app.use(cors());
+// app.use(cors());
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -229,6 +231,7 @@ app.use('/api', StatusRoute);
 app.use('/api', RecJobApplication);
 app.use('/api', jobMatching);
 app.use('/api', scheduleInterview);
+app.use('/api', recruiterFeedback);
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

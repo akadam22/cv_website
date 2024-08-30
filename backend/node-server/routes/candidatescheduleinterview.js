@@ -67,21 +67,4 @@ router.get('/api/candidates', (req, res) => {
   });
 });
 
-router.post('/api/schedule-interview', authenticateJWT, (req, res) => {
-  const { jobId, candidateId } = req.body;
-
-  if (jobId && candidateId) {
-    const query = 'INSERT INTO interviews (job_id, candidate_id) VALUES (?, ?)';
-    connection.query(query, [jobId, candidateId], (error, results) => {
-      if (error) {
-        console.error('Error scheduling interview:', error);
-        return res.status(500).json({ message: 'Error scheduling interview' });
-      }
-      res.status(201).json({ message: 'Interview scheduled successfully' });
-    });
-  } else {
-    res.status(400).json({ message: 'Invalid request' });
-  }
-});
-
 module.exports = router;

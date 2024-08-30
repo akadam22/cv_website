@@ -129,3 +129,57 @@ button:hover {
     padding: 15px;
   }
 }
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  width: 500px;
+  max-width: 80%;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+}
+
+.modal-content textarea {
+  width: 100%;
+  height: 100px;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.modal-content button {
+  margin: 5px;
+  padding: 10px 15px;
+  border: none;
+  background: #b3d0ef;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.modal-content button:hover {
+  background: #84b8ef;
+}
+
+.modal-content button:nth-child(3) {
+  background: #dc3545;
+}
+
+.modal-content button:nth-child(3):hover {
+  background: #c82333;
+}

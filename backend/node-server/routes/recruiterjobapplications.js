@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-
+//recruite page 
 // Endpoint to fetch all job applications with related job, candidate, and resume details
 router.get('/job-applications', async (req, res) => {
   try {
@@ -34,5 +34,6 @@ router.get('/job-applications', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while fetching job applications.' });
   }
 });
+
 
 module.exports = router;
