@@ -50,6 +50,7 @@ function RecruiterCandidate() {
 
   const handleStatusChange = async (applicationId, newStatus) => {
     try {
+      console.log('Updating status for applicationId:', applicationId, 'to', newStatus);
       const response = await axios.put(`http://localhost:4000/api/job-applications/${applicationId}/status`, {
         status: newStatus
       }, {
@@ -70,8 +71,6 @@ function RecruiterCandidate() {
       console.error('Error updating status:', error);
     }
   };
-  
-  
   
 
   const handleFeedbackSubmit = async () => {
@@ -113,7 +112,7 @@ function RecruiterCandidate() {
         <br />
         <h1>Recruiter Dashboard</h1>
         <h2>Job Applications</h2>
-        
+
         {/* Combined Search and Dropdown */}
         <div className="search-dropdown-container">
           <input

@@ -586,7 +586,10 @@ const parseSalaryRange = (description) => {
 
 // Example function to extract salary expectations from candidate profile
 const parseCandidateSalary = (candidateProfile) => {
-    // Assuming candidateProfile contains salary info in a similar format
+    if (!candidateProfile || !candidateProfile.salaryExpectation) {
+        return { min: null, max: null };
+    }
+    
     const salaryRegex = /\$([0-9,]+) - \$([0-9,]+)/;
     const match = candidateProfile.salaryExpectation.match(salaryRegex);
     if (match) {
@@ -597,6 +600,7 @@ const parseCandidateSalary = (candidateProfile) => {
     }
     return { min: null, max: null };
 };
+
 
 // Function to compare salary ranges
 const compareSalaryRanges = (candidateSalary, jobSalary) => {

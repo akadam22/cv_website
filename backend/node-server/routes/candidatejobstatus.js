@@ -36,8 +36,12 @@ router.get('/candidate-applications/:userId', async (req, res) => {
   }
 });
 
-// Backend: Express route for updating job application status
-router.put('/api/job-applications/:applicationId/status', async (req, res) => {
+// Update status route
+router.put('/job-applications/:applicationId/status', async (req, res) => {
+  console.log('PUT request received:', req.originalUrl);
+  console.log('Params:', req.params);
+  console.log('Body:', req.body);
+
   const { applicationId } = req.params;
   const { status } = req.body;
 
@@ -46,17 +50,16 @@ router.put('/api/job-applications/:applicationId/status', async (req, res) => {
   }
 
   try {
-    // Update job application status
     const [result] = await pool.promise().query(
       'UPDATE jobapplication SET status = ? WHERE id = ?',
       [status, applicationId]
     );
 
     if (result.affectedRows === 0) {
+      console.log(`Application with ID ${applicationId} not found.`);
       return res.status(404).json({ message: 'Application not found' });
     }
 
-    // Optionally return the updated application
     const [updatedApplication] = await pool.promise().query(
       'SELECT * FROM jobapplication WHERE id = ?',
       [applicationId]
@@ -68,7 +71,5 @@ router.put('/api/job-applications/:applicationId/status', async (req, res) => {
     res.status(500).json({ message: 'Server error', error });
   }
 });
-
-
 
 module.exports = router;
