@@ -29,6 +29,7 @@ function AdminPage() {
       <div className="sidebar"><br></br><br></br><br></br><br></br>
         <h2>Admin Dashboard</h2>
         <ul>
+        <li><a href="/admin">Home</a></li>
           <li><a href="/admin/users">Manage Users</a></li>
           <li><a href="/admin/jobs">Manage Jobs</a></li>
           <li><button className="logout-button" onClick={() => window.location.href = '/signin'}>Logout</button></li>

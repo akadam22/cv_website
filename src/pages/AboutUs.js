@@ -94,7 +94,7 @@ const AboutUs = () => {
         <div className="team-member">
           <img src={TeamMember3} alt="Team Member 3" />
           <div>
-            <h3>XXXXX</h3>
+            <h3>Yasmine Arafa</h3>
             <p>Second Marker</p>
           </div>
         </div>

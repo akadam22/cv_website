@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import '../styles/CandidateExperience.css';
+import '../styles/CandidateExperience.css'; 
 import Sidebar from '../components/Sidebar';
-//manages education for candidate page.
+
+// Manages education for candidate page
 const CandidateEducation = () => {
   const [education, setEducation] = useState({
     institution: '',
@@ -37,10 +38,28 @@ const CandidateEducation = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setEducation({ ...education, [name]: value });
+    setEducation({ ...education, [name]: value.trim() });
+  };
+
+  const validateForm = () => {
+    const errors = {};
+    if (!education.institution) errors.institution = 'Institution is required';
+    if (!education.degree) errors.degree = 'Degree is required';
+    if (education.start_date && education.end_date && new Date(education.end_date) < new Date(education.start_date)) {
+      errors.date_range = 'End Date cannot be earlier than Start Date';
+    }
+    return errors;
   };
 
   const handleUpload = async () => {
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+      for (const [key, message] of Object.entries(errors)) {
+        alert(message);
+      }
+      return;
+    }
+
     try {
       setUploadStatus('Uploading...');
       const response = await axios.post(`http://localhost:4000/api/upload-education/${userId}`, education, {
@@ -60,7 +79,7 @@ const CandidateEducation = () => {
       setEducationList(updatedResponse.data);
     } catch (error) {
       console.error('Error uploading education:', error.response?.data || error.message);
-      setError(error.response?.data.error || error.message);
+      alert('Upload failed: ' + (error.response?.data.error || error.message));
       setUploadStatus('Upload failed.');
     }
   };
@@ -75,7 +94,7 @@ const CandidateEducation = () => {
       setEducationList(educationList.filter(item => item.id !== educationId));
     } catch (error) {
       console.error('Error deleting education data:', error.response?.data || error.message);
-      setError(error.response?.data.error || error.message);
+      alert('Error deleting education: ' + (error.response?.data.error || error.message));
     }
   };
 
@@ -86,7 +105,7 @@ const CandidateEducation = () => {
           <Sidebar />
         </div>
         <div className="col-md-9">
-          <br/><br/><br/>
+          <br /><br /><br />
           <h1>Manage Your Education</h1>
           <div className="education-container">
             <div className="education-section">
@@ -146,10 +165,10 @@ const CandidateEducation = () => {
               <button onClick={handleUpload}>Upload Education</button>
               <div className="upload-status">
                 {uploadStatus && <p>{uploadStatus}</p>}
-               
+                {error && <p className="error-text">{error}</p>}
               </div>
             </div>
-            
+           
           </div>
         </div>
       </div>

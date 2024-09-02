@@ -1,10 +1,11 @@
 .job-management {
-  padding: 140px;
+  padding: 80px;
   background-color: rgba(255, 255, 255, 0);
   border-radius: 10px;
-  margin: 20px;
+  margin: 10px;
   text-align:center;
   color: black;
+  margin-left: 200px;
 }
 
 .job-table {

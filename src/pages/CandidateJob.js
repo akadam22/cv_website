@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../styles/CandidateJob.css'; // Add your styles here
 import Sidebar from '../components/Sidebar';
-//fetches jobs and allows the candidate to manually apply job and do search functionality
+
 function CandidateJob() {
   const [jobs, setJobs] = useState([]);
   const [filters, setFilters] = useState({ title: '', location: '', company: '' });
   const [error, setError] = useState(null);
+  const [locations, setLocations] = useState([]);
   const [coverLetter, setCoverLetter] = useState('');
 
-  // Get userId from localStorage or sessionStorage
   const userId = localStorage.getItem('userId');
 
   const fetchJobs = async () => {
@@ -23,8 +23,18 @@ function CandidateJob() {
     }
   };
 
+  const fetchLocations = async () => {
+    try {
+      const response = await axios.get('http://localhost:4000/api/locations');
+      setLocations(response.data);
+    } catch (err) {
+      console.error('Error fetching locations:', err);
+    }
+  };
+
   useEffect(() => {
     fetchJobs();
+    fetchLocations(); // Fetch locations when the component mounts
   }, [filters]);
 
   const handleInputChange = (e) => {
@@ -40,7 +50,7 @@ function CandidateJob() {
       alert('You need to be logged in to apply for jobs.');
       return;
     }
-  
+
     try {
       await axios.post(`http://localhost:4000/api/jobs/${jobId}/apply`, {
         userId
@@ -51,7 +61,6 @@ function CandidateJob() {
       alert('Error applying for the job. Please check if you have uploaded your resume or if you have already applied for this job.');
     }
   };
-  
 
   return (
     <div className="job-search-page container">
@@ -71,11 +80,19 @@ function CandidateJob() {
             />
             <input
               type="text"
+              list="location-list"
               name="location"
               placeholder="Location"
               value={filters.location}
               onChange={handleInputChange}
             />
+            <datalist id="location-list">
+              {locations.map((location) => (
+                <option key={location.location} value={location.location}>
+                  {location.location}
+                </option>
+              ))}
+            </datalist>
             <input
               type="text"
               name="company"
@@ -95,7 +112,6 @@ function CandidateJob() {
                   <p><strong>Location:</strong> {job.location}</p>
                   <p><strong>Salary:</strong> ${job.salary}</p>
                   <p>{job.description}</p>
-                
                   <button onClick={() => handleApply(job.id)}>Apply</button>
                 </div>
               ))

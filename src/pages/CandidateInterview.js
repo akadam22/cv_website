@@ -6,8 +6,7 @@ import '../styles/CandidateInterview.css'; // Add your CSS styles here
 function CandidateInterview() {
   const [jobs, setJobs] = useState([]);
   const [candidates, setCandidates] = useState([]);
-  const [scheduleData, setScheduleData] = useState([]);
-
+  
   useEffect(() => {
     // Fetch jobs and candidates
     const fetchJobsAndCandidates = async () => {
@@ -70,35 +69,43 @@ function CandidateInterview() {
           <li><button className="logout-button" onClick={() => window.location.href = '/signin'}>Logout</button></li>
         </ul>
       </div>
-      <h1>Interview Scheduling</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>Job Title</th>
-            <th>Company</th>
-            <th>Candidate Name</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {jobs.map((job) => 
-            candidates.map((candidate) => (
-              <tr key={`${job.id}-${candidate.id}`}>
-                <td>{job.title}</td>
-                <td>{job.company}</td>
-                <td>{candidate.name}</td>
-                <td>
-                  <button 
-                    onClick={() => handleScheduleClick(job.id, candidate.id)}
-                  >
-                    Schedule
-                  </button>
-                </td>
+      <div className="main-content">
+        <br />
+        <br />
+        <h1>Interview Scheduling</h1>
+        {jobs.length > 0 && candidates.length > 0 ? (
+          <table>
+            <thead>
+              <tr>
+                <th>Job Title</th>
+                <th>Company</th>
+                <th>Candidate Name</th>
+                <th>Action</th>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            </thead>
+            <tbody>
+              {jobs.map((job) => 
+                candidates.map((candidate) => (
+                  <tr key={`${job.id}-${candidate.id}`}>
+                    <td>{job.title}</td>
+                    <td>{job.company}</td>
+                    <td>{candidate.name}</td>
+                    <td>
+                      <button 
+                        onClick={() => handleScheduleClick(job.id, candidate.id)}
+                      >
+                        Schedule Interview
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        ) : (
+          <p>No jobs or candidates available.</p>
+        )}
+      </div>
     </div>
   );
 }

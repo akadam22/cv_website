@@ -7,6 +7,16 @@
   background-color: #f0f0f0; /* Light gray background */
 }
 
+.search-input {
+  padding: 5px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 50%;
+  box-sizing: border-box;
+}
+
+
 .sidebar {
   background: #ffffff; /* White background for sidebar */
   padding: 20px;

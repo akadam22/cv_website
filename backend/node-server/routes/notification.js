@@ -1,9 +1,24 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const jwt = require('jsonwebtoken');
+
+// Middleware for JWT authentication
+const authenticateJWT = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret', (err, user) => {
+    if (err) return res.sendStatus(403);
+    req.user = user;
+    next();
+  });
+};
 
 // Endpoint to fetch notifications for a user
-router.get('/notifications/:userId', async (req, res) => {
+router.get('/notifications/:userId', authenticateJWT, async (req, res) => {
   const { userId } = req.params;
 
   try {
@@ -13,33 +28,30 @@ router.get('/notifications/:userId', async (req, res) => {
       WHERE user_id = ?
       ORDER BY created_at DESC
     `;
-    const [rows] = await pool.promise().query(sql, [userId]);
-    
-    res.json(rows);
-  } catch (error) {
-    console.error('Error fetching notifications:', error);
-    res.status(500).json({ error: 'An error occurred while fetching notifications.' });
+    const [notifications] = await pool.promise().query(sql, [userId]);
+    res.json(notifications);
+  } catch (err) {
+    console.error('Error fetching notifications:', err);
+    res.status(500).json({ error: 'Error fetching notifications' });
   }
 });
 
-// Endpoint to mark notifications as read
-router.put('/notifications/:notificationId/read', async (req, res) => {
-    const { notificationId } = req.params;
-  
-    try {
-      const sql = `
-        UPDATE notifications
-        SET is_read = TRUE
-        WHERE id = ?
-      `;
-      await pool.promise().query(sql, [notificationId]);
-  
-      res.status(200).json({ message: 'Notification marked as read.' });
-    } catch (error) {
-      console.error('Error marking notification as read:', error);
-      res.status(500).json({ error: 'An error occurred while marking notification as read.' });
-    }
-  });
-  
+// Endpoint to mark a notification as read
+router.put('/notifications/:notificationId/read', authenticateJWT, async (req, res) => {
+  const { notificationId } = req.params;
+
+  try {
+    const sql = `
+      UPDATE notifications
+      SET is_read = 1
+      WHERE id = ?
+    `;
+    await pool.promise().query(sql, [notificationId]);
+    res.json({ message: 'Notification marked as read' });
+  } catch (err) {
+    console.error('Error updating notification:', err);
+    res.status(500).json({ error: 'Error updating notification' });
+  }
+});
 
 module.exports = router;

@@ -14,7 +14,8 @@ const RecJobApplication = require('./routes/recruiterjobapplications');
 const jobMatching = require('./routes/jobmatching');
 const scheduleInterview = require('./routes/candidatescheduleinterview');
 const recruiterFeedback = require('./routes/recruiterfeedback');
-
+const notificationEmail = require('./routes/notification');
+//const recruiterInterview = require('./routes/recruiterinterviewschedule');
 
 const corsOptions = {
   origin: 'http://localhost:3000', // Your frontend URL
@@ -232,6 +233,9 @@ app.use('/api', RecJobApplication);
 app.use('/api', jobMatching);
 app.use('/api', scheduleInterview);
 app.use('/api', recruiterFeedback);
+app.use('/api', notificationEmail);
+//app.use('/api', recruiterInterview);
+
 
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);

@@ -3,11 +3,16 @@ import axios from 'axios';
 import '../styles/RecruiterPage.css';
 import { Link } from 'react-router-dom';
 
-function RecruiterPage() {
+function RecruiterCandidate() {
   const [jobApplications, setJobApplications] = useState([]);
+  const [filteredApplications, setFilteredApplications] = useState([]);
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [feedback, setFeedback] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedStatus, setSelectedStatus] = useState('All'); // Status filter
+  const [searchCompany, setSearchCompany] = useState(''); // Typed company search
+  const [companyOptions, setCompanyOptions] = useState([]);
 
   useEffect(() => {
     const fetchJobApplications = async () => {
@@ -19,6 +24,11 @@ function RecruiterPage() {
         });
         console.log('Fetched Job Applications:', response.data);
         setJobApplications(response.data);
+        setFilteredApplications(response.data);
+
+        // Extract unique company names for dropdown
+        const companies = [...new Set(response.data.map(app => app.company_name))].sort();
+        setCompanyOptions(companies);
       } catch (error) {
         console.error('Error fetching job applications:', error);
       }
@@ -27,41 +37,60 @@ function RecruiterPage() {
     fetchJobApplications();
   }, []);
 
+  useEffect(() => {
+    const lowercasedQuery = searchQuery.toLowerCase();
+    const filtered = jobApplications.filter(application => {
+      const matchesQuery = application.company_name.toLowerCase().includes(lowercasedQuery);
+      const matchesStatus = selectedStatus === 'All' || application.status === selectedStatus;
+      const matchesCompany = !searchCompany || application.company_name.toLowerCase().includes(searchCompany.toLowerCase());
+      return matchesQuery && matchesStatus && matchesCompany;
+    });
+    setFilteredApplications(filtered);
+  }, [searchQuery, selectedStatus, searchCompany, jobApplications]);
+
   const handleStatusChange = async (applicationId, newStatus) => {
     try {
-      await axios.put(`http://localhost:4000/api/job-applications/${applicationId}/status`, {
+      const response = await axios.put(`http://localhost:4000/api/job-applications/${applicationId}/status`, {
         status: newStatus
+      }, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
+          'Content-Type': 'application/json'
+        }
       });
+      // Update state after successful status change
       const updatedApplications = jobApplications.map(application =>
-        application.application_id === applicationId
+        application.id === applicationId
           ? { ...application, status: newStatus }
           : application
       );
       setJobApplications(updatedApplications);
+      setFilteredApplications(updatedApplications);
     } catch (error) {
       console.error('Error updating status:', error);
     }
   };
+  
+  
+  
 
   const handleFeedbackSubmit = async () => {
-  try {
-    await axios.post(`http://localhost:4000/api/jobapplications/${selectedApplication}/feedback`, {
-      feedback
-    }, {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
-        'Content-Type': 'application/json'
-      }
-    });
-    setFeedback('');
-    setShowModal(false);
-    alert('Feedback submitted successfully');
-  } catch (error) {
-    console.error('Error submitting feedback:', error);
-  }
-};
-
-  
+    try {
+      await axios.post(`http://localhost:4000/api/job-applications/${selectedApplication}/feedback`, {
+        feedback
+      }, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      setFeedback('');
+      setShowModal(false);
+      alert('Feedback submitted successfully');
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+    }
+  };
 
   return (
     <div className="recruiter-page">
@@ -84,7 +113,39 @@ function RecruiterPage() {
         <br />
         <h1>Recruiter Dashboard</h1>
         <h2>Job Applications</h2>
-        {jobApplications.length > 0 ? (
+        
+        {/* Combined Search and Dropdown */}
+        <div className="search-dropdown-container">
+          <input
+            type="text"
+            list="company-list"
+            placeholder="Type or select a company"
+            value={searchCompany}
+            onChange={(e) => setSearchCompany(e.target.value)}
+            className="search-input"
+          />
+          <datalist id="company-list">
+            {companyOptions.map((company, index) => (
+              <option key={index} value={company} />
+            ))}
+          </datalist>
+        </div>
+
+        {/* Status Dropdown */}
+        <select
+          value={selectedStatus}
+          onChange={(e) => setSelectedStatus(e.target.value)}
+          className="status-select"
+        >
+          <option value="All">All Statuses</option>
+          <option value="Received">Received</option>
+          <option value="Under Review">Under Review</option>
+          <option value="Interview Scheduled">Interview Scheduled</option>
+          <option value="Offer Letter">Offer Letter</option>
+          <option value="Rejected">Rejected</option>
+        </select>
+
+        {filteredApplications.length > 0 ? (
           <table>
             <thead>
               <tr>
@@ -96,7 +157,7 @@ function RecruiterPage() {
               </tr>
             </thead>
             <tbody>
-              {jobApplications.map(application => (
+              {filteredApplications.map(application => (
                 <tr key={application.application_id}>
                   <td>{application.job_title}</td>
                   <td>{application.company_name}</td>
@@ -153,4 +214,4 @@ function RecruiterPage() {
   );
 }
 
-export default RecruiterPage;
+export default RecruiterCandidate;

@@ -1,4 +1,3 @@
-
 const express = require('express');
 const router = express.Router();
 const pool = require('../db'); 
@@ -14,15 +13,15 @@ router.get('/jobs', async (req, res) => {
 
     if (title) {
       sql += ' AND title LIKE ?';
-      params.push(`%${title}%`);
+      params.push(`%${title.trim()}%`);
     }
     if (location) {
       sql += ' AND location LIKE ?';
-      params.push(`%${location}%`);
+      params.push(`%${location.trim()}%`);
     }
     if (company) {
       sql += ' AND company LIKE ?';
-      params.push(`%${company}%`);
+      params.push(`%${company.trim()}%`);
     }
 
     const [rows] = await pool.promise().query(sql, params);
@@ -31,6 +30,17 @@ router.get('/jobs', async (req, res) => {
   } catch (error) {
     console.error('Error fetching jobs:', error);
     res.status(500).json({ error: 'An error occurred while fetching jobs.' });
+  }
+});
+
+// Fetch distinct locations from the job table
+router.get('/locations', async (req, res) => {
+  try {
+    const [rows] = await pool.promise().query('SELECT DISTINCT location FROM job WHERE location IS NOT NULL AND location <> ""');
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching locations:', error);
+    res.status(500).json({ error: 'An error occurred while fetching locations.' });
   }
 });
 
@@ -47,7 +57,7 @@ router.post('/jobs/:jobId/apply', async (req, res) => {
     // Check if the user has already applied for this job
     const [existingApplications] = await pool.promise().query(
       'SELECT * FROM jobapplication WHERE job_id = ? AND user_id = ?',
-      [jobId, userId]
+      [jobId.trim(), userId.trim()]
     );
 
     // Debugging log
@@ -59,7 +69,7 @@ router.post('/jobs/:jobId/apply', async (req, res) => {
     }
 
     // Fetch resume ID for the user
-    const [resumeRows] = await pool.promise().query('SELECT id FROM resume WHERE user_id = ?', [userId]);
+    const [resumeRows] = await pool.promise().query('SELECT id FROM resume WHERE user_id = ?', [userId.trim()]);
 
     if (resumeRows.length === 0) {
       return res.status(400).json({ error: 'You must upload a resume before applying for a job.' });
@@ -69,16 +79,16 @@ router.post('/jobs/:jobId/apply', async (req, res) => {
 
     // Insert the job application with the retrieved resume ID
     const sql = 'INSERT INTO jobapplication (job_id, user_id, resume_id, status) VALUES (?, ?, ?, ?)';
-    const params = [jobId, userId, resumeId, 'Applied'];
+    const params = [jobId.trim(), userId.trim(), resumeId, 'Applied'];
 
     await pool.promise().query(sql, params);
 
     // Fetch job details
-    const [jobRows] = await pool.promise().query('SELECT * FROM job WHERE id = ?', [jobId]);
+    const [jobRows] = await pool.promise().query('SELECT * FROM job WHERE id = ?', [jobId.trim()]);
     const job = jobRows[0];
 
     // Fetch user details
-    const [userRows] = await pool.promise().query('SELECT email, name FROM users WHERE id = ?', [userId]);
+    const [userRows] = await pool.promise().query('SELECT email, name FROM users WHERE id = ?', [userId.trim()]);
     const user = userRows[0];
 
     res.status(200).json({ message: 'Application submitted successfully' });
@@ -87,9 +97,5 @@ router.post('/jobs/:jobId/apply', async (req, res) => {
     res.status(500).json({ error: 'An error occurred while applying for the job.' });
   }
 });
-
-
-  
-  
 
 module.exports = router;

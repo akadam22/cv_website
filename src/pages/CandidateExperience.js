@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import '../styles/CandidateExperience.css'; // Create and style this as needed
+import '../styles/CandidateExperience.css'; // Ensure this file includes necessary styles
 import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer'; // Import Footer component
-//manages experience for candidate page.
+
+// Manages experience for candidate page
 function CandidateExperience() {
   const [experience, setExperience] = useState({
     job_title: '',
@@ -14,15 +15,34 @@ function CandidateExperience() {
     description: ''
   });
   const [uploadStatus, setUploadStatus] = useState('');
-  const [error, setError] = useState(null);
   const userId = localStorage.getItem('userId');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setExperience({ ...experience, [name]: value });
+    // Trim the value before setting the state
+    setExperience({ ...experience, [name]: value.trim() });
+  };
+
+  const validateForm = () => {
+    const errors = {};
+    if (!experience.job_title) errors.job_title = 'Job Title is required';
+    if (!experience.company) errors.company = 'Company is required';
+    if (experience.start_date && experience.end_date && new Date(experience.end_date) < new Date(experience.start_date)) {
+      errors.date_range = 'End Date cannot be earlier than Start Date';
+    }
+    return errors;
   };
 
   const handleUpload = async () => {
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+      // Display validation errors using alert
+      for (const [key, message] of Object.entries(errors)) {
+        alert(message);
+      }
+      return;
+    }
+
     try {
       setUploadStatus('Uploading...');
       const response = await axios.post(`http://localhost:4000/api/upload-experience/${userId}`, experience, {
@@ -31,11 +51,12 @@ function CandidateExperience() {
           'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
         },
       });
+      alert('Upload successful!');
       setUploadStatus('Upload successful!');
       console.log('Experience upload response:', response.data);
     } catch (error) {
       console.error('Error uploading experience:', error.response?.data || error.message);
-      setError(error.response?.data.error || error.message);
+      alert('Upload failed: ' + (error.response?.data.error || error.message));
       setUploadStatus('Upload failed.');
     }
   };
@@ -49,7 +70,7 @@ function CandidateExperience() {
         </div>
 
         {/* Main Content Area */}
-        <div className="col-md-9"><br></br><br></br><br></br>
+        <div className="col-md-9"><br /><br /><br />
           <h1>Upload Your Work Experience</h1>
           <div className="experience-container">
             <div className="experience-section">
@@ -109,12 +130,12 @@ function CandidateExperience() {
               <button onClick={handleUpload}>Upload Experience</button>
               <div className="upload-status">
                 {uploadStatus && <p>{uploadStatus}</p>}
-               
               </div>
             </div>
           </div>
         </div>
       </div>
+      <Footer /> {/* Ensure Footer component is properly defined */}
     </div>
   );
 }

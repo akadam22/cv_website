@@ -2,14 +2,14 @@ import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 
 const BarChartComponent = ({ data }) => {
-  // Ensure data is properly formatted
+  //display data on the bar chart
   const jobsData = data.jobs_per_company || [];
   const candidatesData = data.candidates_per_company || [];
 
   return (
     <div>
       {jobsData.length > 0 && (
-        <BarChart width={600} height={300} data={jobsData}>
+        <BarChart width={500} height={300} data={jobsData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="company" />
           <YAxis />
@@ -19,7 +19,7 @@ const BarChartComponent = ({ data }) => {
         </BarChart>
       )}
       {candidatesData.length > 0 && (
-        <BarChart width={600} height={300} data={candidatesData}>
+        <BarChart width={500} height={300} data={candidatesData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="company" />
           <YAxis />

@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2');
-const jwt = require('jsonwebtoken');
 
 const router = express.Router(); // Use Router instead of creating a new app
 
@@ -34,19 +33,6 @@ connection.connect((err) => {
   console.log('Connected to the database');
 });
 
-// Middleware for JWT authentication
-const authenticateJWT = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (token == null) return res.sendStatus(401);
-
-  jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret', (err, user) => {
-    if (err) return res.sendStatus(403);
-    req.user = user;
-    next();
-  });
-};
 
 // Define routes
 router.get('/api/jobs', (req, res) => {
@@ -66,5 +52,6 @@ router.get('/api/candidates', (req, res) => {
     res.json(results);
   });
 });
+
 
 module.exports = router;

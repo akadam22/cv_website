@@ -1,5 +1,6 @@
 /* Apply styles to the container holding the job list */
 .job-list {
+  margin-left: 270px;
   padding: 20px;
   background: url('../assets/image7.jpeg') no-repeat center center fixed;
   background-size: cover; /* Ensure the image covers the entire area */
@@ -49,8 +50,8 @@
 
 /* Style for buttons */
 button {
-  padding: 5px 10px;
-  margin: 0 5px;
+  padding: 5px 10px; /* Reduce padding for smaller buttons */
+  margin: 5px; /* Space between buttons */
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -58,7 +59,9 @@ button {
   color: white; /* White text */
   z-index: 10;
   position: relative;
+  font-size: 0.8em; /* Smaller font size for buttons */
 }
+
 .job-table button {
   margin: 0 5px; /* Space between buttons */
 }
@@ -67,6 +70,7 @@ button {
   display: flex;
   gap: 5px; /* Space between buttons */
 }
+
 button:hover {
   background-color: #2980b9; /* Darker shade for hover effect */
 }
@@ -90,6 +94,8 @@ button:hover {
 
 .popup button {
   margin-top: 10px;
+  padding: 5px 10px; /* Reduce padding for smaller buttons */
+  font-size: 0.8em; /* Smaller font size for buttons */
 }
 
 /* Ensure the overlay covers the entire viewport */
@@ -163,12 +169,12 @@ button:hover {
 }
 
 .modal button {
-  padding: 10px 15px;
+  padding: 5px 10px; /* Reduce padding for smaller buttons */
   border: none;
   border-radius: 4px;
   background-color: #007bff;
   color: white;
-  font-size: 1em;
+  font-size: 0.8em; /* Smaller font size for buttons */
   cursor: pointer;
   margin-top: 10px;
   transition: background-color 0.3s;

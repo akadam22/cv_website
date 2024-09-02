@@ -4,6 +4,7 @@ import Modal from 'react-modal';
 import { Link, useNavigate } from 'react-router-dom';
 import '../styles/JobList.css';
 
+
 Modal.setAppElement('#root'); // Set the root element for accessibility
 
 function JobList() {
@@ -174,10 +175,26 @@ function JobList() {
 
   return (
     <div className="job-list">
+  <div className="sidebar">
+        <br />
+        <br />
+        <br />
+        <h2>Recruiter Dashboard</h2>
+        <ul>
+          <li><Link to="/recruiter">Home</Link></li>
+          <li><Link to="/recruiter/jobs">Jobs</Link></li>
+          <li><Link to="/recruiter/candidates">Candidates</Link></li>
+          <li><Link to="/recruiter/interview">Schedule Interview</Link></li>
+          <li><button className="logout-button" onClick={() => window.location.href = '/signin'}>Logout</button></li>
+        </ul>
+      </div>
       <br />
       <br />
       <br />
       <h2>Your Job Postings</h2>
+      <Link to="/recruiter/jobs/new">
+        <button>Post a New Job</button>
+      </Link>
       <table className="job-table">
         <thead>
           <tr>
@@ -205,9 +222,7 @@ function JobList() {
           ))}
         </tbody>
       </table>
-      <Link to="/recruiter/jobs/new">
-        <button>Post a New Job</button>
-      </Link>
+    
 
       {/* Modal for editing a job */}
       <Modal

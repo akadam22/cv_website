@@ -36,13 +36,15 @@
 }
 
 .cta-button {
-  padding: 8px 16px; /* Adjusted padding for smaller button */
-  font-size: 0.875rem; /* Adjusted font size */
+  width: 130px;
+  padding: 6px 12px; /* Adjusted padding for smaller button */
+  font-size: 0.75rem; /* Adjusted font size */
   background-color: #f9e0af;
   color: black;
   text-decoration: none;
   border-radius: 5px;
 }
+
 
 .features-section {
   padding: 2rem;
@@ -54,14 +56,16 @@
 }
 
 .feature-item button {
-  padding: 8px 12px; /* Adjusted padding for smaller button */
-  font-size: 0.875rem; /* Adjusted font size */
+  width: 120px;
+  padding: 10px 14px; /* Adjusted padding for smaller button */
+  font-size: 0.75rem; /* Adjusted font size */
   border: none;
   background-color: #98c7f9;
   color: white;
   border-radius: 5px;
   cursor: pointer;
 }
+
 
 .modal-overlay {
   position: fixed;
@@ -85,14 +89,15 @@
 }
 
 .modal-content button {
-  padding: 8px 12px; /* Adjusted padding for smaller button */
-  font-size: 0.875rem; /* Adjusted font size */
+  padding: 6px 12px; /* Adjusted padding for smaller button */
+  font-size: 0.75rem; /* Adjusted font size */
   border: none;
   background-color: #1a7ee9;
   color: rgb(4, 4, 4);
   border-radius: 5px;
   cursor: pointer;
 }
+
 
 .company-logos {
   display: flex;

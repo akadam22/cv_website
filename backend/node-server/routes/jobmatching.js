@@ -95,11 +95,11 @@ const expandWithSynonyms = async (text) => {
     return expandedText;
 };
 
-// // Before applying TF-IDF, expand the resume and job descriptions
-// const parseResumeWithSynonyms = async (resumeText) => {
-//     const expandedResume = await expandWithSynonyms(resumeText);
-//     return await extractKeywordsAndSynonyms(expandedResume);
-// };
+// Before applying TF-IDF, expand the resume and job descriptions
+const parseResumeWithSynonyms = async (resumeText) => {
+    const expandedResume = await expandWithSynonyms(resumeText);
+    return await extractKeywordsAndSynonyms(expandedResume);
+};
 
 const cleanText = (text) => {
     return text
@@ -246,7 +246,11 @@ const SIMILARITY_THRESHOLD = 0.05; //we can adjust it accordingly
 // Check if a candidate matches a job based on similarity score
 const matchCandidateToJob = async (candidate, job) => {
     const similarityScore = calculateSimilarity(candidate.resumeText, job.jobText);
-    return similarityScore > SIMILARITY_THRESHOLD;
+    const candidateSalary = parseCandidateSalary(candidate);
+    const jobSalary = parseSalaryRange(job.description);
+
+    const salaryMatch = compareSalaryRanges(candidateSalary, jobSalary);
+    return similarityScore > SIMILARITY_THRESHOLD && salaryMatch;
 };
 
 // ===================== Auto-Apply =====================
@@ -315,9 +319,22 @@ const processAndCompare = async () => {
             }
         }
     }
+
+    for (const job of jobs) {
+        const jobSalary = parseSalaryRange(job.description);
+
+        for (const candidate of candidates) {
+            const candidateSalary = parseCandidateSalary(candidate);
+
+            if (compareSalaryRanges(candidateSalary, jobSalary)) {
+                // Proceed with further processing
+            }
+        }
+    }
 };
 
 processAndCompare();
+
 
 // Notify candidate via email
 const notifyCandidate = async (userId, jobId) => {
@@ -536,6 +553,58 @@ const getSynonyms = async (word) => {
     } catch (error) {
         return [];
     }
+};
+
+// Example function to parse experience level from job description
+const parseExperienceLevel = (description) => {
+    // Example implementation to extract experience level from job description
+    if (description.includes('junior')) return 'junior';
+    if (description.includes('mid-level')) return 'mid-level';
+    if (description.includes('senior')) return 'senior';
+    return 'unspecified';
+};
+
+// Example function to compare experience levels
+const compareExperienceLevels = (candidateExperience, jobExperience) => {
+    // Example implementation to compare experience levels
+    const levels = ['junior', 'mid-level', 'senior'];
+    return levels.indexOf(candidateExperience) >= levels.indexOf(jobExperience);
+};
+
+// Function to extract salary range from job description
+const parseSalaryRange = (description) => {
+    const salaryRegex = /\$([0-9,]+) - \$([0-9,]+)/;
+    const match = description.match(salaryRegex);
+    if (match) {
+        return {
+            min: parseInt(match[1].replace(/,/g, ''), 10),
+            max: parseInt(match[2].replace(/,/g, ''), 10)
+        };
+    }
+    return { min: null, max: null };
+};
+
+// Example function to extract salary expectations from candidate profile
+const parseCandidateSalary = (candidateProfile) => {
+    // Assuming candidateProfile contains salary info in a similar format
+    const salaryRegex = /\$([0-9,]+) - \$([0-9,]+)/;
+    const match = candidateProfile.salaryExpectation.match(salaryRegex);
+    if (match) {
+        return {
+            min: parseInt(match[1].replace(/,/g, ''), 10),
+            max: parseInt(match[2].replace(/,/g, ''), 10)
+        };
+    }
+    return { min: null, max: null };
+};
+
+// Function to compare salary ranges
+const compareSalaryRanges = (candidateSalary, jobSalary) => {
+    if (!candidateSalary.min || !candidateSalary.max || !jobSalary.min || !jobSalary.max) {
+        return false;
+    }
+
+    return (candidateSalary.min <= jobSalary.max) && (candidateSalary.max >= jobSalary.min);
 };
 
 module.exports = router;

@@ -1,4 +1,11 @@
+/* Styling for error messages */
+.error-message {
+  color: red; /* Red color for error messages */
+  font-size: 14px; /* Optional: Adjust font size for readability */
+  margin-bottom: 10px; /* Space below error messages */
+}
 
+/* Ensure other styles remain unchanged */
 .job-form-container {
   display: flex;
   justify-content: center;
@@ -73,4 +80,3 @@ button:hover {
 .delete-button:hover {
   background-color: darkred;
 }
-

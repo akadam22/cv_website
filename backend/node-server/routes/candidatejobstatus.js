@@ -36,4 +36,39 @@ router.get('/candidate-applications/:userId', async (req, res) => {
   }
 });
 
+// Backend: Express route for updating job application status
+router.put('/api/job-applications/:applicationId/status', async (req, res) => {
+  const { applicationId } = req.params;
+  const { status } = req.body;
+
+  if (!status) {
+    return res.status(400).json({ message: 'Status is required' });
+  }
+
+  try {
+    // Update job application status
+    const [result] = await pool.promise().query(
+      'UPDATE jobapplication SET status = ? WHERE id = ?',
+      [status, applicationId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ message: 'Application not found' });
+    }
+
+    // Optionally return the updated application
+    const [updatedApplication] = await pool.promise().query(
+      'SELECT * FROM jobapplication WHERE id = ?',
+      [applicationId]
+    );
+
+    res.json(updatedApplication[0]);
+  } catch (error) {
+    console.error('Error updating status:', error);
+    res.status(500).json({ message: 'Server error', error });
+  }
+});
+
+
+
 module.exports = router;
