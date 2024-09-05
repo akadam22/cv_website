@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pool = require('../db'); // Ensure this path is correct
+const { sendEmailNotification } = require('./emailnotification');
 
 // Endpoint to fetch job applications for a specific user
 router.get('/candidate-applications/:userId', async (req, res) => {
@@ -71,5 +72,7 @@ router.put('/job-applications/:applicationId/status', async (req, res) => {
     res.status(500).json({ message: 'Server error', error });
   }
 });
+
+
 
 module.exports = router;

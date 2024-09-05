@@ -70,7 +70,8 @@ function CandidatePage() {
         <br/><br/>
         <h1>Welcome, {username}!</h1>
         <p>This is your candidate dashboard where you can manage your profile, upload and view your resume, and update your details.</p>
-
+        <br></br>
+        <p><b>Application with status AppliedS = Applied by System and Applied = Applied by Candidate</b></p>
         <h2>Your Job Applications</h2>
         {applications.length > 0 ? (
           <table>
@@ -95,7 +96,7 @@ function CandidatePage() {
           <p>No job applications found.</p>
         )}
 
-        <h2>Your Notifications</h2>
+        {/* <h2>Your Notifications</h2>
         {notifications.length > 0 ? (
           <ul>
             {notifications.map((notif) => (
@@ -110,7 +111,7 @@ function CandidatePage() {
           </ul>
         ) : (
           <p>No notifications found.</p>
-        )}
+        )} */}
       </div>
     </div>
   );

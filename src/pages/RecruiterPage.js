@@ -7,7 +7,7 @@ function RecruiterPage() {
   // Hardcoded stats data
   const stats = {
     total_companies: 10,
-    total_candidates: 150,
+    total_candidates: 10,
     jobs_per_company: [
       { company: 'Tech Innovators Inc.', jobs_posted: 5 },
       { company: 'Creative Design Studio', jobs_posted: 2 },
@@ -42,7 +42,6 @@ function RecruiterPage() {
           <li><Link to="/recruiter">Home</Link></li>
           <li><Link to="/recruiter/jobs">Jobs</Link></li>
           <li><Link to="/recruiter/candidates">Candidates</Link></li>
-          <li><Link to="/recruiter/interview">Schedule Interview</Link></li>
           <li><button className="logout-button" onClick={() => window.location.href = '/signin'}>Logout</button></li>
         </ul>
       </div>

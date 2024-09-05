@@ -73,6 +73,7 @@ def register():
     finally:
         cursor.close()
         conn.close()
+        
 # Example of proper cursor management
 @app.route('/api/signin', methods=['POST'])
 def login():
@@ -430,6 +431,46 @@ def send_email():
 def handle_internal_error(error):
     app.logger.error(f"Internal Server Error: {error}")
     return jsonify({"error": "An internal error occurred. Please try again later."}), 500
+
+
+# Endpoint to get the current user data
+@app.route('/api/user', methods=['GET'])
+@jwt_required()
+def get_current_user():
+    current_user = get_jwt_identity()
+    user_id = current_user['id']
+    
+    conn = create_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, name, email, role FROM users WHERE id = %s", (user_id,))
+    user = cursor.fetchone()
+    
+    if user is None:
+        return jsonify({"error": "User not found"}), 404
+    
+    return jsonify({"id": user[0], "name": user[1], "email": user[2], "role": user[3]})
+
+# Endpoint to update the current user data
+@app.route('/api/user', methods=['PUT'])
+@jwt_required()
+def update_current_user():
+    current_user = get_jwt_identity()
+    user_id = current_user['id']
+    data = request.get_json()
+    
+    name = data.get('name')
+    email = data.get('email')
+    role = data.get('role')
+    
+    conn = create_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "UPDATE users SET name = %s, email = %s, role = %s WHERE id = %s",
+        (name, email, role, user_id)
+    )
+    conn.commit()
+    
+    return jsonify({"message": "User updated successfully"})
 
 
 if __name__ == '__main__':

@@ -23,6 +23,7 @@ function Sidebar() {
         <li><Link to="/candidate/experience">Experience</Link></li>
         <li><Link to="/candidate/education">Education</Link></li>
         <li><Link to="/candidate/skills">Skills</Link></li>
+    
 
         <li><button className="logout-button" onClick={handleLogout}>Logout</button></li>
       </ul>

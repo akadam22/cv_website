@@ -1,14 +1,14 @@
 const path = require('path');//file handling
-const fs = require('fs'); //file handling
+const fs = require('fs'); //allows you to work with the file system, like reading or writing files.
 const pool = require('../db'); // Database connection
 const express = require('express'); //api routes
-const router = express.Router();
+const router = express.Router(); //manage different routes in your Express application.
 const natural = require('natural');  //text processing, extracting words
 const WordNet = require('node-wordnet'); // finding synonyms
 const wordnet = new WordNet();
 const cron = require('node-cron'); //scheduling the job applying tasks 10 secs interval
 const axios = require('axios'); // for external API requests
-const mammoth = require('mammoth'); //getting texts from resumes (.doc)files
+const mammoth = require('mammoth'); //getting texts from resumes (.doc)files and pdf-parse for pdf files
 const tokenizer = new natural.WordTokenizer();
 const nodemailer = require('nodemailer'); //Email Notification
 const dotenv = require('dotenv');
@@ -50,38 +50,38 @@ const getResumeIdForCandidate = async (candidateId) => {
 
 // Extract keywords and synonyms from text
 const extractKeywordsAndSynonyms = async (text) => {
-    const tfidf = new natural.TfIdf();
-    tfidf.addDocument(text);
+    const tfidf = new natural.TfIdf();//creates tfidf instance from natural library
+    tfidf.addDocument(text); // adds text to document
 
-    const keywords = tfidf.listTerms(0).map(term => term.term);
-
+    const keywords = tfidf.listTerms(0).map(term => term.term); //returns the term into array of object .map helps in transforming the obj to term string.
+//map: Transforms each element in an array based on the function provided.
     const allKeywords = new Set(keywords);
 
     for (const keyword of keywords) {
         try {
-            const definitions = await new Promise((resolve, reject) => {
+            const definitions = await new Promise((resolve, reject) => {//Promise: Handles asynchronous operations and represents their eventual completion or failure.
                 wordnet.lookup(keyword, (err, defs) => {
                     if (err) return reject(err);
                     resolve(defs);
                 });
-            });
+            });//flatMap is used to map each definition object to its synonyms and flatten the result into a single array
             const synonyms = definitions.flatMap(def => def.meta?.synonyms || []);
             synonyms.forEach(synonym => allKeywords.add(synonym));
         } catch (error) {
-            // Handle error silently or log if necessary
+            
         }
     }
 
     return Array.from(allKeywords).join(' ');
 };
 
-// Parse resume text
+// Parse resume text  processes and cleans the resume text, and then extracts keywords and synonyms.
 const parseResume = async (resume) => {
     const cleanedResume = cleanText(resume);
     const keywordsAndSynonyms = await extractKeywordsAndSynonyms(cleanedResume);
     return keywordsAndSynonyms;
 };
-
+//expands a given text by adding synonyms for each word.
 const expandWithSynonyms = async (text) => {
     const words = text.split(/\s+/);
     let expandedText = text;
@@ -100,7 +100,7 @@ const parseResumeWithSynonyms = async (resumeText) => {
     const expandedResume = await expandWithSynonyms(resumeText);
     return await extractKeywordsAndSynonyms(expandedResume);
 };
-
+//cleans up the text by removing extra spaces and trimming it.
 const cleanText = (text) => {
     return text
         .replace(/\s+/g, ' ')
@@ -180,7 +180,7 @@ const calculateCosineSimilarity = (resumeTerms, jobTerms) => {
     let resumeMagnitude = 0;
     let jobMagnitude = 0;
 
-    Object.keys(resumeTermFrequency).forEach(term => {
+    Object.keys(resumeTermFrequency).forEach(term => { //Gets an array of all the terms (keys) 
         if (jobTermFrequency[term]) {
             dotProduct += resumeTermFrequency[term] * jobTermFrequency[term];
         }
@@ -320,17 +320,17 @@ const processAndCompare = async () => {
         }
     }
 
-    for (const job of jobs) {
-        const jobSalary = parseSalaryRange(job.description);
+    // for (const job of jobs) {
+    //     const jobSalary = parseSalaryRange(job.description);
 
-        for (const candidate of candidates) {
-            const candidateSalary = parseCandidateSalary(candidate);
+    //     for (const candidate of candidates) {
+    //         const candidateSalary = parseCandidateSalary(candidate);
 
-            if (compareSalaryRanges(candidateSalary, jobSalary)) {
-                // Proceed with further processing
-            }
-        }
-    }
+    //         if (compareSalaryRanges(candidateSalary, jobSalary)) {
+               
+    //         }
+    //     }
+    // }
 };
 
 processAndCompare();
@@ -406,8 +406,8 @@ const sendEmail = async (candidate, jobDetails) => {
 
 
 // Batch process candidates for a job
-const processedJobs = new Set(); // Local in-memory cache
-const processedApplications = new Set(); // Local in-memory cache
+const processedJobs = new Set(); // Local in-memory cache keeps track of jobs that have already been processed to avoid re-processing.
+const processedApplications = new Set(); // Local in-memory cache keeps track of job applications that have already been processed.
 
 const isJobProcessed = (jobId) => processedJobs.has(jobId);
 const markJobAsProcessed = (jobId) => processedJobs.add(jobId);
@@ -415,6 +415,7 @@ const markJobAsProcessed = (jobId) => processedJobs.add(jobId);
 const isApplicationProcessed = (candidateId, jobId) => processedApplications.has(`${candidateId}-${jobId}`);
 const markApplicationAsProcessed = (candidateId, jobId) => processedApplications.add(`${candidateId}-${jobId}`);
 
+//function processes candidates for a job and applies if there’s a match. It avoids re-processing jobs.
 const batchProcessCandidates = async (job, candidates) => {
     if (isJobProcessed(job.id)) {
         console.log(`Job ${job.id} already processed.`); // Log job processing status
@@ -513,8 +514,7 @@ const autoApplyJobsForNewJob = async (jobId) => {
             }
         }
     } catch (error) {
-        // Handle error silently or log if necessary
-    }
+        res.status(500).send('Error applying.');
 };
 
 // Route to create a new job and auto-apply for it
@@ -541,74 +541,74 @@ cron.schedule('*/10 * * * * *', async () => {
     try {
         await autoApplyJobsForExistingJobs();
     } catch (error) {
-        // Handle error silently or log if necessary
+        res.status(500).send('Error scheduling.');
     }
 });
 
-//function to get synonyms using Datamuse API
-const getSynonyms = async (word) => {
-    try {
-        const response = await axios.get(`https://api.datamuse.com/words?rel_syn=${word}`);
-        return response.data.map(entry => entry.word);
-    } catch (error) {
-        return [];
-    }
-};
+// //function to get synonyms using Datamuse API
+// const getSynonyms = async (word) => {
+//     try {
+//         const response = await axios.get(`https://api.datamuse.com/words?rel_syn=${word}`);
+//         return response.data.map(entry => entry.word);
+//     } catch (error) {
+//         return [];
+//     }
+// };
 
-// Example function to parse experience level from job description
-const parseExperienceLevel = (description) => {
-    // Example implementation to extract experience level from job description
-    if (description.includes('junior')) return 'junior';
-    if (description.includes('mid-level')) return 'mid-level';
-    if (description.includes('senior')) return 'senior';
-    return 'unspecified';
-};
+// // Example function to parse experience level from job description
+// const parseExperienceLevel = (description) => {
+//     // Example implementation to extract experience level from job description
+//     if (description.includes('junior')) return 'junior';
+//     if (description.includes('mid-level')) return 'mid-level';
+//     if (description.includes('senior')) return 'senior';
+//     return 'unspecified';
+// };
 
-// Example function to compare experience levels
-const compareExperienceLevels = (candidateExperience, jobExperience) => {
-    // Example implementation to compare experience levels
-    const levels = ['junior', 'mid-level', 'senior'];
-    return levels.indexOf(candidateExperience) >= levels.indexOf(jobExperience);
-};
+// // Example function to compare experience levels
+// const compareExperienceLevels = (candidateExperience, jobExperience) => {
+//     // Example implementation to compare experience levels
+//     const levels = ['junior', 'mid-level', 'senior'];
+//     return levels.indexOf(candidateExperience) >= levels.indexOf(jobExperience);
+// };
 
-// Function to extract salary range from job description
-const parseSalaryRange = (description) => {
-    const salaryRegex = /\$([0-9,]+) - \$([0-9,]+)/;
-    const match = description.match(salaryRegex);
-    if (match) {
-        return {
-            min: parseInt(match[1].replace(/,/g, ''), 10),
-            max: parseInt(match[2].replace(/,/g, ''), 10)
-        };
-    }
-    return { min: null, max: null };
-};
+// // Function to extract salary range from job description
+// const parseSalaryRange = (description) => {
+//     const salaryRegex = /\$([0-9,]+) - \$([0-9,]+)/;
+//     const match = description.match(salaryRegex);
+//     if (match) {
+//         return {
+//             min: parseInt(match[1].replace(/,/g, ''), 10),
+//             max: parseInt(match[2].replace(/,/g, ''), 10)
+//         };
+//     }
+//     return { min: null, max: null };
+// };
 
-// Example function to extract salary expectations from candidate profile
-const parseCandidateSalary = (candidateProfile) => {
-    if (!candidateProfile || !candidateProfile.salaryExpectation) {
-        return { min: null, max: null };
-    }
+// // Example function to extract salary expectations from candidate profile
+// const parseCandidateSalary = (candidateProfile) => {
+//     if (!candidateProfile || !candidateProfile.salaryExpectation) {
+//         return { min: null, max: null };
+//     }
     
-    const salaryRegex = /\$([0-9,]+) - \$([0-9,]+)/;
-    const match = candidateProfile.salaryExpectation.match(salaryRegex);
-    if (match) {
-        return {
-            min: parseInt(match[1].replace(/,/g, ''), 10),
-            max: parseInt(match[2].replace(/,/g, ''), 10)
-        };
-    }
-    return { min: null, max: null };
-};
+//     const salaryRegex = /\$([0-9,]+) - \$([0-9,]+)/;
+//     const match = candidateProfile.salaryExpectation.match(salaryRegex);
+//     if (match) {
+//         return {
+//             min: parseInt(match[1].replace(/,/g, ''), 10),
+//             max: parseInt(match[2].replace(/,/g, ''), 10)
+//         };
+//     }
+//     return { min: null, max: null };
+// };
 
 
-// Function to compare salary ranges
-const compareSalaryRanges = (candidateSalary, jobSalary) => {
-    if (!candidateSalary.min || !candidateSalary.max || !jobSalary.min || !jobSalary.max) {
-        return false;
-    }
+// // Function to compare salary ranges
+// const compareSalaryRanges = (candidateSalary, jobSalary) => {
+//     if (!candidateSalary.min || !candidateSalary.max || !jobSalary.min || !jobSalary.max) {
+//         return false;
+//     }
 
-    return (candidateSalary.min <= jobSalary.max) && (candidateSalary.max >= jobSalary.min);
-};
-
+//     return (candidateSalary.min <= jobSalary.max) && (candidateSalary.max >= jobSalary.min);
+// };
+}
 module.exports = router;

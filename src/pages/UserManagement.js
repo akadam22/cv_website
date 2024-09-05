@@ -53,7 +53,7 @@ function UserManagement() {
   
     axios.put(`http://localhost:5000/api/users/${selectedUser.id}`, selectedUser, {
       headers: {
-        'Authorization': `Bearer ${token}`,
+        'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`,
         'Content-Type': 'application/json'
       }
     })

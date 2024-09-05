@@ -1,0 +1,42 @@
+/* Center the content of the page */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  /* Style the heading */
+  h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  /* Style the message paragraph */
+  p {
+    font-size: 16px;
+    color: #555;
+    text-align: center;
+    max-width: 600px;
+  }
+  
+  /* Optional: Add a link to go back to the home page */
+  .link {
+    margin-top: 20px;
+  }
+  
+  .link a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 16px;
+  }
+  
+  .link a:hover {
+    text-decoration: underline;
+  }
+  

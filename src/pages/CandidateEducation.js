@@ -16,6 +16,7 @@ const CandidateEducation = () => {
   const [educationList, setEducationList] = useState([]);
   const [uploadStatus, setUploadStatus] = useState('');
   const [error, setError] = useState(null);
+  const [errors, setErrors] = useState({});
   const userId = localStorage.getItem('userId');
 
   useEffect(() => {
@@ -42,21 +43,22 @@ const CandidateEducation = () => {
   };
 
   const validateForm = () => {
-    const errors = {};
-    if (!education.institution) errors.institution = 'Institution is required';
-    if (!education.degree) errors.degree = 'Degree is required';
+    const newErrors = {};
+    if (!education.institution) newErrors.institution = 'Institution is required';
+    if (!education.degree) newErrors.degree = 'Degree is required';
+    if (!education.field_of_study) newErrors.field_of_study = 'Field of Study is required';
+    if (!education.description) newErrors.description = 'Description is required';
     if (education.start_date && education.end_date && new Date(education.end_date) < new Date(education.start_date)) {
-      errors.date_range = 'End Date cannot be earlier than Start Date';
+      newErrors.date_range = 'End Date cannot be earlier than Start Date';
     }
-    return errors;
+    return newErrors;
   };
 
   const handleUpload = async () => {
-    const errors = validateForm();
-    if (Object.keys(errors).length > 0) {
-      for (const [key, message] of Object.entries(errors)) {
-        alert(message);
-      }
+    const formErrors = validateForm();
+    setErrors(formErrors);
+
+    if (Object.keys(formErrors).length > 0) {
       return;
     }
 
@@ -116,7 +118,9 @@ const CandidateEducation = () => {
                   name="institution"
                   value={education.institution}
                   onChange={handleInputChange}
+                  className={errors.institution ? 'input-error' : ''}
                 />
+                {errors.institution && <p className="error-text">{errors.institution}</p>}
               </label>
               <label>
                 Degree*:
@@ -125,16 +129,20 @@ const CandidateEducation = () => {
                   name="degree"
                   value={education.degree}
                   onChange={handleInputChange}
+                  className={errors.degree ? 'input-error' : ''}
                 />
+                {errors.degree && <p className="error-text">{errors.degree}</p>}
               </label>
               <label>
-                Field of Study:
+                Field of Study*:
                 <input
                   type="text"
                   name="field_of_study"
                   value={education.field_of_study}
                   onChange={handleInputChange}
+                  className={errors.field_of_study ? 'input-error' : ''}
                 />
+                {errors.field_of_study && <p className="error-text">{errors.field_of_study}</p>}
               </label>
               <label>
                 Start Date:
@@ -153,22 +161,40 @@ const CandidateEducation = () => {
                   value={education.end_date}
                   onChange={handleInputChange}
                 />
+                {errors.date_range && <p className="error-text">{errors.date_range}</p>}
               </label>
               <label>
-                Description:
+                Description*:
                 <textarea
                   name="description"
                   value={education.description}
                   onChange={handleInputChange}
+                  className={errors.description ? 'input-error' : ''}
                 />
+                {errors.description && <p className="error-text">{errors.description}</p>}
               </label>
               <button onClick={handleUpload}>Upload Education</button>
               <div className="upload-status">
                 {uploadStatus && <p>{uploadStatus}</p>}
-                {error && <p className="error-text">{error}</p>}
               </div>
             </div>
-           
+            <div className="education-list">
+              {educationList.length > 0 ? (
+                educationList.map((edu) => (
+                  <div key={edu.id} className="education-item">
+                    <h3>{edu.institution}</h3>
+                    <p><strong>Degree:</strong> {edu.degree}</p>
+                    <p><strong>Field of Study:</strong> {edu.field_of_study}</p>
+                    <p><strong>Start Date:</strong> {edu.start_date}</p>
+                    <p><strong>End Date:</strong> {edu.end_date}</p>
+                    <p><strong>Description:</strong> {edu.description}</p>
+                    <button onClick={() => handleDelete(edu.id)}>Delete</button>
+                  </div>
+                ))
+              ) : (
+                <p>No education records found.</p>
+              )}
+            </div>
           </div>
         </div>
       </div>

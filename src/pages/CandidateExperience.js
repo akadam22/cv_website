@@ -135,7 +135,6 @@ function CandidateExperience() {
           </div>
         </div>
       </div>
-      <Footer /> {/* Ensure Footer component is properly defined */}
     </div>
   );
 }
